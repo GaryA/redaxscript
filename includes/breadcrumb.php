@@ -15,11 +15,11 @@ function breadcrumb()
 	$last = end($breadcrumb_array_keys);
 
 	/* collect item output */
-
+	$output = ''; // GaryA - initialise variable
 	foreach ($breadcrumb_array as $key => $value)
 	{
-		$title = $value['title'];
-		$route = $value['route'];
+		$title = array_key_exists('title', $value) ? $value['title'] : ''; // GaryA - initialise $title if array key doesn't exist
+		$route = array_key_exists('route', $value) ? $value['route'] : ''; // GaryA - initialise $route if array key doesn't exist
 		if ($title)
 		{
 			$output .= '<li>';

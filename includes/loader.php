@@ -79,16 +79,24 @@ function loader($type = '', $mode = '')
 	else
 	{
 		$loader_template = $loader_ini['template'];
-		$loader_browser = $loader_ini[MY_BROWSER];
-		$loader_engine = $loader_ini[MY_ENGINE];
+		// GaryA - check MY_BROWSER and MY_ENGINE array keys exist.
+		// If not initialise variables to empty arrays
+		$loader_browser = array_key_exists(MY_BROWSER, $loader_ini)
+				? $loader_ini[MY_BROWSER] : array();
+		$loader_engine = array_key_exists(MY_ENGINE, $loader_ini)
+				? $loader_ini[MY_ENGINE] : array();
 
 		/* logged in */
 
 		if (LOGGED_IN == TOKEN)
 		{
 			$loader_admin = $loader_ini['admin'];
-			$loader_admin_browser = $loader_ini['admin_' . MY_BROWSER];
-			$loader_admin_engine = $loader_ini['admin_' . MY_ENGINE];
+			// GaryA - check MY_BROWSER and MY_ENGINE array keys exist.
+			// If not initialise variables to empty arrays
+			$loader_admin_browser = array_key_exists('admin ' . MY_BROWSER, $loader_ini)
+					? $loader_ini['admin_' . MY_BROWSER] : array();
+			$loader_admin_engine = array_key_exists('admin ' . MY_ENGINE)
+					? $loader_ini['admin_' . MY_ENGINE] : array();
 		}
 		$loader_rewrite = $loader_ini['settings']['rewrite'];
 	}
@@ -97,39 +105,39 @@ function loader($type = '', $mode = '')
 	/* merge loader include as needed */
 
 	$loader_include = array();
-	if ($loader_template_startup)
+	if (isset($loader_template_startup) && $loader_template_startup) // GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_template_startup);
 	}
-	if ($loader_admin_startup)
+	if (isset($loader_admin_startup) && $loader_admin_startup) // GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_admin_startup);
 	}
-	if ($loader_modules)
+	if (isset($loader_modules) && $loader_modules)// GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_modules);
 	}
-	if ($loader_template)
+	if (isset($loader_template) && $loader_template)// GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_template);
 	}
-	if ($loader_browser)
+	if (isset($loader_browser) && $loader_browser)// GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_browser);
 	}
-	if ($loader_engine)
+	if (isset($loader_engine) && $loader_engine)// GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_engine);
 	}
-	if ($loader_admin)
+	if (isset($loader_admin) && $loader_admin)// GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_admin);
 	}
-	if ($loader_admin_browser)
+	if (isset($loader_admin_browser) && $loader_admin_browser)// GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_admin_browser);
 	}
-	if ($loader_admin_engine)
+	if (isset($loader_admin_engine) && $loader_admin_engine)// GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_admin_engine);
 	}
@@ -144,7 +152,7 @@ function loader($type = '', $mode = '')
 
 	/* collect include output */
 
-	if ($loader_include)
+	if (isset($loader_include) && $loader_include)// GaryA - check variable is set and true
 	{
 		$loader_include_keys = array_keys($loader_include);
 		$last = end($loader_include_keys);
@@ -160,11 +168,11 @@ function loader($type = '', $mode = '')
 	{
 		hook(__FUNCTION__ . '_' . $type . '_transport_end');
 	}
-	$output .= ob_get_clean() . PHP_EOL;
+	$output = ob_get_clean() . PHP_EOL; // GaryA - changed .= to = since this is the first assignment of $output and not in a loop
 
 	/* rewrite path */
 
-	if ($loader_rewrite)
+	if (isset($loader_rewrite) && $loader_rewrite)// GaryA - check variable is set and true
 	{
 		$output = preg_replace('/templates\/'. $template . '/', ROOT . '/templates/' . $template, $output);
 		if (LOGGED_IN == TOKEN)
@@ -191,6 +199,7 @@ function loader($type = '', $mode = '')
 function styles()
 {
 	hook(__FUNCTION__ . '_start');
+	$output = ''; // GaryA - initialise variable
 
 	/* parse loader ini */
 
@@ -207,13 +216,16 @@ function styles()
 			$loader_ini = array_merge_recursive($loader_inherit_ini, $loader_ini);
 		}
 	}
-	$loader_single = $loader_ini['single'];
+	// GaryA - check array key exists, if not initialise variable to ''
+	$loader_single = array_key_exists('single', $loader_ini) ? $loader_ini['single'] : '';
 
 	/* logged in */
 
 	if (LOGGED_IN == TOKEN)
 	{
-		$loader_admin_single = $loader_ini['admin_single'];
+	// GaryA - check array key exists, if not initialise variable to ''
+		$loader_admin_single = array_key_exists('admin_single', $loader_ini)
+				? $loader_ini['admin_single'] : '';
 	}
 	$loader_deploy = $loader_ini['settings']['deploy'];
 
@@ -224,7 +236,7 @@ function styles()
 	{
 		$loader_include = array_merge($loader_include, $loader_single);
 	}
-	if ($loader_admin_single)
+	if (isset($loader_admin_single) && $loader_admin_single) // GaryA - check variable is set and true
 	{
 		$loader_include = array_merge($loader_include, $loader_admin_single);
 	}
@@ -261,6 +273,7 @@ function styles()
 
 function scripts($mode = '')
 {
+	$output = ''; // GaryA - initialise variable
 	if ($mode == '')
 	{
 		hook(__FUNCTION__ . '_start');
@@ -300,7 +313,9 @@ function scripts($mode = '')
 
 		if (LOGGED_IN == TOKEN)
 		{
-			$loader_admin_single = $loader_ini['admin_single'];
+			// GaryA - check array key esists, otherwise initialise variable to ''
+			$loader_admin_single = array_key_exists('admin_single', $loader_ini)
+					? $loader_ini['admin_single'] : '';
 		}
 		$loader_deploy = $loader_ini['settings']['deploy'];
 
@@ -311,7 +326,7 @@ function scripts($mode = '')
 		{
 			$loader_include = array_merge($loader_include, $loader_single);
 		}
-		if ($loader_admin_single)
+		if (isset($loader_admin_single) && $loader_admin_single) // GaryA - check variable is set and true
 		{
 			$loader_include = array_merge($loader_include, $loader_admin_single);
 		}

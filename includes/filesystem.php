@@ -116,14 +116,14 @@ class Redaxscript_Directory
 	 * @since 1.3
 	 *
 	 * @param string $directory
-	 * @return array $diretoryArray
+	 * @return array $directoryArray
 	 */
 
 	protected function _scan($directory = '')
 	{
 		/* use from static cache */
 
-		if (array_key_exists($directory, self::$_cache))
+		if (self::$_cache != null && array_key_exists($directory, self::$_cache)) // GaryA - ensure $_cache is not null before passing it to array_key_exists
 		{
 			$directoryArray = self::$_cache[$directory];
 		}

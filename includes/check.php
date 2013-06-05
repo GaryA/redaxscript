@@ -115,6 +115,10 @@ function check_protocol($input = '')
 	{
 		$output = 'https';
 	}
+	else
+	{
+		$output = ''; // GaryA - ensure variable is always initialised
+	}
 	return $output;
 }
 

@@ -218,7 +218,7 @@ class Redaxscript_Parser
 			{
 				/* json decode */
 
-				$json = json_decode($value);
+				$json = json_decode($value, true); // GaryA - decode json string to array as required by call_user_func_array
 
 				/* catch function output */
 

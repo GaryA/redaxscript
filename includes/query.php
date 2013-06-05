@@ -86,7 +86,9 @@ function retrieve($column = '', $table = '', $field = '', $value = '')
 
 	/* fetch from cache */
 
-	if ($retrieve[$column . $table . $field . $value])
+	if ($retrieve != null
+			&& array_key_exists($column . $table . $field . $value, $retrieve)
+			&& $retrieve[$column . $table . $field . $value]) // GaryA - check $retrieve is not null and that array key exists before testing its value
 	{
 		$output = $retrieve[$column . $table . $field . $value];
 	}
@@ -103,6 +105,11 @@ function retrieve($column = '', $table = '', $field = '', $value = '')
 			$output = $retrieve[$column . $table . $field . $value] = $r[$column];
 		}
 	}
+	// GaryA - if value (or any other parameter) is not set, return nothing
+	else
+	{
+		$output = '';
+	}
 	return $output;
 }
 
@@ -116,10 +123,13 @@ function retrieve($column = '', $table = '', $field = '', $value = '')
 function query_table($input = '')
 {
 	static $table;
+	$output = ''; // GaryA - initialise variable
 
 	/* fetch from cache */
 
-	if ($table[$input])
+	if ($input != '' && is_array($table)
+			&& array_key_exists($input, $table) && $table[$input])
+	// GaryA - check that $index exists, $table is an array, and that the $index key exists before checking the value
 	{
 		$output = $table[$input];
 	}
@@ -208,8 +218,8 @@ function build_route($table = '', $id = '')
 	static $route;
 
 	/* fetch from cache */
-
-	if ($route[$table . $id])
+	// GaryA - check that $route is an array and that the key exists before checking the value
+	if (is_array($route) && array_key_exists($table . $id, $route) && $route[$table . $id])
 	{
 		$output = $route[$table . $id];
 	}

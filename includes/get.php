@@ -15,7 +15,8 @@ function get_parameter($input = '')
 
 	if ($parameter == '')
 	{
-		$parameter = explode('/', $_GET['p']);
+		// GaryA - ensure $parameter is initialised in cases where 'p' does not exist in $_GET
+		$parameter = (array_key_exists('p', $_GET)) ? explode('/', $_GET['p']) : array(0 => '');
 
 		/* clean parameter */
 
@@ -29,27 +30,35 @@ function get_parameter($input = '')
 	{
 		$admin = 1;
 	}
+	// GaryA - test whether parameters exist and are numeric or not before switch statement
+	$p0_not_numeric = is_numeric($parameter[0]) === false;
+	$p1_numeric = count($parameter) > 1 && is_numeric($parameter[1]);
+	$p1_not_numeric = count($parameter) > 1 && is_numeric($parameter[1]) === false;
+	$p2_numeric = count($parameter) > 2 && is_numeric($parameter[2]);
+	$p2_not_numeric = count($parameter) > 2 && is_numeric($parameter[2]) === false;
+	$p3_numeric = count($parameter) > 3 && is_numeric($parameter[3]);
+	$p3_not_numeric = count($parameter) > 3 && is_numeric($parameter[3]) === false;
 
 	/* switch parameter */
 
 	switch (true)
 	{
-		case $input == 'first' && is_numeric($parameter[0]) == '':
+		case $input == 'first' && $p0_not_numeric:
 			$output = $parameter[0];
 			break;
-		case $input == 'first_sub' && is_numeric($parameter[1]):
-		case $input == 'second' && is_numeric($parameter[1]) == '':
+		case $input == 'first_sub' && $p1_numeric:
+		case $input == 'second' && $p1_not_numeric:
 		case $input == 'admin' && $admin == 1:
 			$output = $parameter[1];
 			break;
-		case $input == 'second_sub' && is_numeric($parameter[2]):
-		case $input == 'third' && is_numeric($parameter[2]) == '':
+		case $input == 'second_sub' && $p2_numeric:
+		case $input == 'third' && $p2_not_numeric:
 		case $input == 'table' && $admin == 1:
 			$output = $parameter[2];
 			break;
-		case $input == 'third_sub' && is_numeric($parameter[3]):
-		case $input == 'id' && $admin == 1 && is_numeric($parameter[3]):
-		case $input == 'alias' && $admin == 1 && is_numeric($parameter[3]) == '':
+		case $input == 'third_sub' && $p3_numeric:
+		case $input == 'id' && $admin == 1 && $p3_numeric:
+		case $input == 'alias' && $admin == 1 && $p3_not_numeric:
 			$output = $parameter[3];
 			break;
 		case $input == 'last' && is_numeric(end($parameter)):
@@ -76,6 +85,7 @@ function get_parameter($input = '')
 
 function get_route($mode = '')
 {
+	$output = ''; // GaryA - initialise variable
 	/* switch admin parameter */
 
 	switch (ADMIN_PARAMETER)
@@ -96,7 +106,8 @@ function get_route($mode = '')
 			$output = 'admin/edit/' . TABLE_PARAMETER;
 			break;
 		default:
-			$parameter = explode('/', $_GET['p']);
+			// GaryA - ensure $parameter is initialised even if 'p' does not exist in $_GET
+			$parameter = (array_key_exists('p', $_GET)) ? explode('/', $_GET['p']) : array();
 
 			/* clean parameter */
 
@@ -197,7 +208,7 @@ function get_user_agent($mode = '')
 	$user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
 
 	/* collect output */
-
+	$output = ''; // GaryA - initialise variable
 	foreach ($list as $value)
 	{
 		if (stristr($user_agent, $value))

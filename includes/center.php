@@ -45,7 +45,9 @@ function routing()
 	$post_list = explode(', ', b('default_post'));
 	foreach ($post_list as $value)
 	{
-		if ($_POST[$value . '_post'] && function_exists($value . '_post'))
+		if (array_key_exists($value . '_post', $_POST)
+				&& $_POST[$value . '_post']
+				&& function_exists($value . '_post')) // GaryA - check array key exists before using it
 		{
 			call_user_func($value . '_post');
 			return;

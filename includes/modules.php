@@ -8,7 +8,8 @@
 
 function modules_include()
 {
-	static $modules_installed_array, $modules_directory_array;
+	static $modules_installed_array = '';
+	static $modules_directory_array = ''; // GaryA - initialise statics
 
 	/* query installed modules */
 
@@ -61,7 +62,8 @@ function modules_include()
 function hook($input = '')
 {
 	global $hooks;
-	static $modules_include;
+	static $modules_include = ''; // GaryA - initialise statics
+	$output = ''; // GaryA - initialise $output so that .= assignment does not cause a Notice
 
 	/* get modules include */
 

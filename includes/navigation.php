@@ -10,6 +10,7 @@
 function navigation_list($table = '', $options = '')
 {
 	hook(__FUNCTION__ . '_start');
+	$output = ''; // GaryA - initialise variable
 
 	/* define option variables */
 
@@ -48,7 +49,7 @@ function navigation_list($table = '', $options = '')
 
 	if ($query_parent)
 	{
-		if ($option_parent)
+		if (isset($option_parent) && $option_parent) // GaryA - check variable is set and true
 		{
 			$query .= ' && ' . $query_parent . ' = ' . $option_parent;
 		}
@@ -64,14 +65,14 @@ function navigation_list($table = '', $options = '')
 	{
 		/* setup filter alias option */
 
-		if ($option_filter_alias)
+		if (isset($option_filter_alias) && $option_filter_alias) // GaryA - check variable is set and true
 		{
 			$query .= ' && alias IN (' . $option_filter_alias . ')';
 		}
 
 		/* setup filter rank option */
 
-		if ($option_filter_rank)
+		if (isset($option_filter_rank) && $option_filter_rank) // GaryA - check variable is set and true
 		{
 			$query .= ' && rank IN (' . $option_filter_rank . ')';
 		}
@@ -80,7 +81,7 @@ function navigation_list($table = '', $options = '')
 	/* setup order option */
 
 	$query .= ' ORDER BY rank ';
-	if ($option_order)
+	if (isset($option_order) &&	$option_order) // GaryA - check variable is set and true
 	{
 		$query .= $option_order;
 	}
@@ -92,7 +93,7 @@ function navigation_list($table = '', $options = '')
 	/* setup limit option */
 
 	$query .= ' LIMIT ';
-	if ($option_limit)
+	if (isset($option_limit) && $option_limit) // GaryA - check variable is set and true
 	{
 		$query .= $option_limit;
 	}
@@ -113,6 +114,7 @@ function navigation_list($table = '', $options = '')
 	{
 		/* collect output */
 
+		$counter = 0; // GaryA - initialise variable
 		while ($r = mysql_fetch_assoc($result))
 		{
 			$access = $r['access'];
@@ -132,7 +134,7 @@ function navigation_list($table = '', $options = '')
 
 				/* build class string */
 
-				if (LAST_PARAMETER == $alias && $table != 'comments')
+				if ($table != 'comments' && LAST_PARAMETER == $alias) // GaryA - change order of tests because $alias is not set if table = comments
 				{
 					$class_string = ' class="item_active"';
 				}
@@ -169,7 +171,7 @@ function navigation_list($table = '', $options = '')
 
 				/* collect children list output */
 
-				if ($table == 'categories' && $option_children == 1)
+				if ($table == 'categories' && isset($option_children) && $option_children == 1) // GaryA - check variable is set before testing value
 				{
 					ob_start();
 					navigation_list($table, array(
@@ -196,9 +198,13 @@ function navigation_list($table = '', $options = '')
 
 	/* setup id option */
 
-	if ($option_id)
+	if (isset($option_id) && $option_id) // GaryA - check variable is set and true
 	{
 		$id_string = ' id="' . $option_id . '"';
+	}
+	else
+	{
+		$id_string = ''; // GaryA - ensure $id_string is always initialised
 	}
 
 	/* setup class option */
@@ -214,7 +220,8 @@ function navigation_list($table = '', $options = '')
 
 	/* handle error */
 
-	if ($error && $option_parent == '')
+	$option_parent = isset($option_parent) ? $option_parent : ''; // GaryA - Ensure variable is initialised
+	if (isset($error) && $error && $option_parent == '') // GaryA - check variable is set and true
 	{
 		$output = '<ul' .$id_string . $class_string . '><li>' . $error . '</li></ul>';
 	}

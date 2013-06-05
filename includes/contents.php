@@ -7,6 +7,9 @@
 function contents()
 {
 	hook(__FUNCTION__ . '_start');
+	$output = ''; // GaryA - initialise variables
+	$counter = 0;
+	$sub_maximum = 0;
 
 	/* query contents */
 
@@ -30,6 +33,7 @@ function contents()
 			if (LAST_SUB_PARAMETER > $sub_maximum || LAST_SUB_PARAMETER == '')
 			{
 				$sub_active = 1;
+				$offset_string = ''; // GaryA - ensure variable is initialised
 			}
 			else
 			{
@@ -83,6 +87,10 @@ function contents()
 				if (LAST_TABLE == 'categories' || FULL_ROUTE == '' || check_alias(FIRST_PARAMETER, 1) == 1)
 				{
 					$route = build_route('articles', $id);
+				}
+				else
+				{
+					$route = ''; // GaryA - ensure variable is initialised
 				}
 
 				/* parser object */
@@ -148,7 +156,7 @@ function contents()
 
 	/* handle error */
 
-	if ($error)
+	if (isset($error)) // GaryA - $error is only set if there has been an error
 	{
 		notification(l('something_wrong'), $error);
 	}
@@ -197,6 +205,7 @@ function extras($filter = '')
 	{
 		hook(__FUNCTION__ . '_start');
 	}
+	$output = ''; // GaryA - initialise variable
 
 	/* query extras */
 
@@ -243,7 +252,8 @@ function extras($filter = '')
 				{
 					/* parser object */
 
-					$parser = new Redaxscript_Parser($text, $route);
+					$parser = new Redaxscript_Parser($text); // GaryA - extras table does not have a route field
+					// so call Redaxscript_Parse without optional route parameter
 
 					/* collect headline output */
 
@@ -313,7 +323,7 @@ function infoline($table = '', $id = '', $author = '', $date = '')
 
 	/* collect comment output */
 
-	if ($comments_total)
+	if (isset($comments_total) && $comments_total) // GaryA - check variable is set and true
 	{
 		$output .= '<span class="divider">' . s('divider') . '</span>' . '<span class="infoline_total">' . $comments_total . ' ';
 		if ($comments_total == 1)
@@ -410,6 +420,10 @@ function notification($title = '', $text = '', $action = '', $route = '')
 	if (FIRST_PARAMETER == 'admin')
 	{
 		$suffix = '_admin';
+	}
+	else
+	{
+		$suffix = ''; // GaryA - ensure variable is initialised
 	}
 
 	/* collect output */

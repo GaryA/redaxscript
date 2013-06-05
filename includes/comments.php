@@ -27,10 +27,10 @@ function comments($article = '', $route = '')
 		{
 			$sub_active = 1;
 		}
-		else
-		{
-			$offset_string = ($sub_active - 1) * s('limit') . ', ';
-		}
+		// GaryA - removed else() clause so that $offset_string is always initialised
+		$offset_string = ($sub_active - 1) * s('limit') . ', ';
+		// GaryA - if $sub_active = 1 then limit becomes LIMIT 0, s('limit')
+		// GaryA - which is just as valid as LIMIT s('limit')
 	}
 	$query .= ' LIMIT ' . $offset_string . s('limit');
 	$result = mysql_query($query);
@@ -47,6 +47,7 @@ function comments($article = '', $route = '')
 
 	else if ($result)
 	{
+		$counter = 0; // GaryA - initialise variable
 		$output = '<div class="box_line"></div>';
 		while ($r = mysql_fetch_assoc($result))
 		{
@@ -106,7 +107,7 @@ function comments($article = '', $route = '')
 
 	/* handle error */
 
-	if ($error)
+	if (isset($error)) // GaryA - $error is only set if something has gone wrong
 	{
 		$output = '<div class="box_comment_error">' . $error . l('point') . '</div>';
 	}
@@ -150,7 +151,14 @@ function comment_form($article = '', $language = '', $access = '')
 		$class_readonly = ' field_readonly';
 		$code_readonly = ' readonly="readonly"';
 	}
-
+	// GaryA - define fields as empty if not logged in
+	else
+	{
+		$class_readonly = $class_disabled = ''; // GaryA - this may not be right but it's what the current code effectively does
+		$code_readonly = $code_disabled = ''; // GaryA - this may not be right but it's what the current code effectively does
+		$author = '';
+		$email = '';
+	}
 	/* captcha object */
 
 	if (s('captcha') > 0)

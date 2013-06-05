@@ -16,6 +16,10 @@
 function anchor_element($type = '', $id = '', $class = '', $name = '', $value = '', $title = '', $code = '')
 {
 	/* build attribute strings */
+	$selector_string = ''; // GaryA - initialise variables
+	$value_string = '';
+	$code_string = '';
+	$title_string = '';
 
 	if ($id)
 	{
@@ -85,6 +89,12 @@ function anchor_element($type = '', $id = '', $class = '', $name = '', $value = 
 function form_element($type = '', $id = '', $class = '', $name = '', $value = '', $label = '', $code = '')
 {
 	/* build attribute strings */
+	$selector_string = ''; // GaryA - Initialise variables
+	$value_string = '';
+	$code_string = '';
+	$name_string = '';
+	$label_string = '';
+	$output = '';
 
 	if ($id)
 	{
@@ -170,6 +180,12 @@ function form_element($type = '', $id = '', $class = '', $name = '', $value = ''
 function select_element($id = '', $class = '', $name = '', $options = '', $select = '', $label = '', $code = '')
 {
 	/* build attribute strings */
+	$selector_string = ''; // GaryA - initialise variables
+	$value_string = '';
+	$code_string = '';
+	$name_string = '';
+	$position_multiple = -1;
+	$size_string = '';
 
 	if ($id)
 	{
@@ -283,6 +299,9 @@ function select_date($id = '', $class = '', $name = '', $date = '', $format = ''
 function object_element($type = '', $id = '', $class = '', $name = '', $value = '', $data = '', $code = '')
 {
 	/* build attribute strings */
+	$selector_string = ''; // GaryA - initialise variables
+	$param_string = '';
+	$code_string = '';
 
 	if ($id)
 	{

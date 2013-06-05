@@ -260,6 +260,8 @@ function startup()
 	else
 	{
 		define('FILTER', 1);
+		define('MY_GROUPS', ''); // GaryA - MY_GROUPS gets passed to check_access even if user is not logged in
+		// so it should be defined to something, otherwise it is treated as a string
 	}
 
 	/* define table access */

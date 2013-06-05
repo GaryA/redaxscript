@@ -24,6 +24,11 @@ function search_form()
 		$class_disabled = ' field_disabled';
 		$code_disabled = ' disabled="disabled"';
 	}
+	else
+	{
+		$class_disabled = ''; // GaryA - ensure variables are initialised
+		$code_disabled = '';
+	}
 
 	/* collect output */
 
@@ -48,6 +53,7 @@ function search_post()
 {
 	/* clean post */
 
+	$output = ''; // GaryA - initialise variable
 	if (ATTACK_BLOCKED < 10)
 	{
 		$search_terms = clean($_POST['search_terms'], 1);
@@ -157,7 +163,7 @@ function search_post()
 
 	/* handle error */
 
-	if ($error)
+	if (isset($error)) // GaryA - $error is only set if there has been an error
 	{
 		notification(l('something_wrong'), $error);
 	}

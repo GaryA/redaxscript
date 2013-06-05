@@ -7,13 +7,18 @@
 function head()
 {
 	hook(__FUNCTION__ . '_start');
+	$check_access = 0; // GaryA - initialise variables set inside if() block
+	$title = '';
+	$description = '';
+	$keywords = '';
+
 	if (LAST_TABLE)
 	{
 		/* query contents */
 
 		$query = 'SELECT title, description, keywords, access FROM ' . PREFIX . LAST_TABLE . ' WHERE alias = \'' . LAST_PARAMETER . '\' && status = 1';
 		$result = mysql_query($query);
-		if ($result)
+		if ($result && mysql_num_rows($result) > 0) // GaryA - added num_rows check to ensure that while() loop will execute
 		{
 			while ($r = mysql_fetch_assoc($result))
 			{
@@ -163,7 +168,7 @@ function head()
 
 	/* extend canonical url */
 
-	if ($canonical_route)
+	if (isset($canonical_route)) // GaryA - changed if() to if(isset()) to fix Notice
 	{
 		$canonical_url .= $canonical_route;
 	}

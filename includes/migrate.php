@@ -117,3 +117,80 @@ function l($name = null)
 	$output = $language->init($name);
 	return $output;
 }
+
+/**
+ * login list
+ *
+ * @since 2.2.0
+ * @deprecated 2.0.0
+ *
+ * @package Redaxscript
+ * @category Migrate
+ * @author Gary Aylward
+ */
+
+function login_list()
+{
+	$registry = Redaxscript_Registry::instance();
+	$login = new Redaxscript_Navigation_Login($registry);
+	echo $login->get();
+}
+
+/**
+ * templates list
+ *
+ * @since 2.2.0
+ * @deprecated 2.0.0
+ *
+ * @package Redaxscript
+ * @category Migrate
+ * @author Gary Aylward
+ */
+
+function templates_list($options = array())
+{
+	$directory = New Redaxscript_Directory('templates', array(
+		'admin',
+		'install'
+	));
+	$registry = Redaxscript_Registry::instance();
+	$navigation = new Redaxscript_Navigation_Directory($registry, 'template', $options, $directory);
+	echo $navigation->get();
+}
+
+/**
+ * languages list
+ *
+ * @since 2.2.0
+ * @deprecated 2.0.0
+ *
+ * @package Redaxscript
+ * @category Migrate
+ * @author Gary Aylward
+ */
+
+function languages_list($options = array())
+{
+	$directory = New Redaxscript_Directory('languages', 'misc.php');
+	$registry = Redaxscript_Registry::instance();
+	$navigation = new Redaxscript_Navigation_Directory($registry, 'language', $options, $directory);
+	echo $navigation->get();
+}
+
+/**
+ * navigation list
+ *
+ * @since 2.2.0
+ * @deprecated 2.0.0
+ *
+ * @package Redaxscript
+ * @category Migrate
+ * @author Gary Aylward
+ */
+
+function navigation_list($table = '', $options = array())
+{
+	$registry = Redaxscript_Registry::instance();
+	$navigation = new Redaxscript_Navigation_Table($registry, $table, $options);
+	echo $navigation->get();
+}

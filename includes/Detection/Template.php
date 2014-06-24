@@ -21,10 +21,10 @@ class Redaxscript_Detection_Template extends Redaxscript_Detection
 	public function init()
 	{
 		$this->_detect(array(
-			'parameter' => $this->_getParameter('t'),
-			'session' => isset($_SESSION[$this->_registry->get('root') . '/template']) ? $_SESSION[$this->_registry->get('root') . '/template'] : '',
-			'contents' => retrieve('template', $this->_registry->get('lastTable'), 'id', $this->_registry->get('lastId')),
-			'settings' => s('template'),
+			'query' => Redaxscript_Request::getQuery('t'),
+			'session' => Redaxscript_Request::getSession($this->_registry->get('root') . '/template'),
+			'contents' => $this->_registry->get('lastTable') ? Redaxscript_Db::forPrefixTable($this->_registry->get('lastTable'))->where('id', $this->_registry->get('lastId'))->findOne()->template : null,
+			'settings' => Redaxscript_Db::forPrefixTable('settings')->where('name', 'template')->findOne()->value,
 			'fallback' => 'default'
 		), 'template', 'templates/{value}/index.phtml');
 	}

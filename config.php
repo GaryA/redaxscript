@@ -3,14 +3,14 @@
 /**
  * parent class to store database config
  *
- * @since 2.0.0
+ * @since 2.2.0
  *
  * @package Redaxscript
  * @category Config
  * @author Henry Ruhs
  */
 
-class Redaxscript_Config
+class Redaxscript_Config extends Redaxscript_Singleton
 {
 	/**
 	 * database config
@@ -18,41 +18,41 @@ class Redaxscript_Config
 	 * @var array
 	 */
 
-	private $_config = array(
+	private static $_config = array(
 		// [config]
-		'host' => '',
-		'name' => '',
-		'user' => '',
-		'password' => '',
+		'type' => 'mysql',
+		'host' => 'redaxscript.com',
+		'name' => 'd01ae38a',
+		'user' => 'd01ae38a',
+		'password' => 'travis',
 		'prefix' => '',
 		'salt' => ''
 		// [/config]
 	);
 
 	/**
-	 * get the config
+	 * get item from config
 	 *
-	 * @since 2.0.0
+	 * @since 2.2.0
 	 *
-	 * @param string $key item from the config
+	 * @param string $key key of the item
 	 *
-	 * @return string
+	 * @return string|array
 	 */
 
-	public function get($key = null)
+	public static function get($key = null)
 	{
-		/* return single value */
+		$output = null;
 
-		if (array_key_exists($key, $this->_config))
+		/* values as needed */
+
+		if (is_null($key))
 		{
-			$output = $this->_config[$key];
+			$output = self::$_config;
 		}
-
-		/* else return array */
-
-		else
+		else if (array_key_exists($key, self::$_config))
 		{
-			$output = $this->_config;
+			$output = self::$_config[$key];
 		}
 		return $output;
 	}

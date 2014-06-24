@@ -5,9 +5,6 @@ error_reporting(0);
 
 include_once('includes/check.php');
 include_once('includes/clean.php');
-include_once('includes/Detection.php');
-include_once('includes/Detection/Language.php');
-include_once('includes/Detection/Template.php');
 include_once('includes/generate.php');
 include_once('includes/get.php');
 include_once('includes/loader.php');
@@ -15,13 +12,10 @@ include_once('includes/misc.php');
 include_once('includes/modules.php');
 include_once('includes/password.php');
 include_once('includes/query.php');
-include_once('includes/Registry.php');
 include_once('includes/replace.php');
 include_once('includes/startup.php');
-
-/* vendor */
-
 include_once('vendor/j4mie/idiorm/idiorm.php');
+include_once('includes/Singleton.php');
 
 /* install post */
 
@@ -44,7 +38,7 @@ define('ROBOTS', 'none');
 
 /* registry object */
 
-$registry = Redaxscript_Registry::instance();
+$registry = Redaxscript_Registry::getInstance();
 $registry->set('title', l('installation'));
 
 /* call loader else render template */
@@ -479,6 +473,7 @@ function write_config()
 
 		$pattern = '/\/\/\s+\[config].*?\/\/\s+\[\/config]/s';
 		$replacement = '// [config]
+		\'type\' => \'mysql\',
 		\'host\' => \'' . $d_host . '\',
 		\'name\' => \'' . $d_name . '\',
 		\'user\' => \'' . $d_user . '\',

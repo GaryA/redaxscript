@@ -31,7 +31,7 @@ class Redaxscript_Parser_Test extends PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-		$this->_registry = Redaxscript_Registry::instance();
+		$this->_registry = Redaxscript_Registry::getInstance();
 	}
 
 	/**
@@ -58,6 +58,7 @@ class Redaxscript_Parser_Test extends PHPUnit_Framework_TestCase
 	 * @param string $text
 	 * @param string $route
 	 * @param string $expect
+	 *
 	 * @dataProvider providerParser
 	 */
 

@@ -10,29 +10,15 @@
  * @author Henry Ruhs
  */
 
-class Redaxscript_Language
+class Redaxscript_Language extends Redaxscript_Singleton
 {
 	/**
-	 * instance of the registry class
+	 * array of language values
 	 *
-	 * @var object
+	 * @var array
 	 */
 
-	protected $_registry;
-
-	/**
-	 * constructor of the class
-	 *
-	 * @since 2.2.0
-	 *
-	 * @param Redaxscript_Registry $registry instance of the registry class
-	 */
-
-	public function __construct(Redaxscript_Registry $registry)
-	{
-		$this->_registry = $registry;
-		$this->init();
-	}
+	protected static $_values = array();
 
 	/**
 	 * init the class
@@ -40,36 +26,92 @@ class Redaxscript_Language
 	 * @since 2.2.0
 	 */
 
-	public function init($name = null)
+	public static function init($language = 'en')
 	{
-		/* fetch and merge things one time */
-		$l = array();
-		$output = '';
+		self::load('languages/en.json');
 
-		/* not working, hard coded */
-		$language = $this->_registry->get('language');
-		$language = 'en';
-		$json_default = json_decode(file_get_contents('languages/' . $language . '.json'), true);
-		$json_current = array();
+		/* merge another language */
 
 		if ($language !== 'en')
 		{
-			$json_current = json_decode(file_get_contents('languages/' . $language . '.json'), true);
+			self::load('languages/' . $language . '.json');
 		}
-		if (is_array($json_default))
+	}
+
+	/**
+	 * get item from language
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param string $key key of the item
+	 * @param string $index index of the key array
+	 *
+	 * @return string
+	 */
+
+	public static function get($key = null, $index = null)
+	{
+		$output = null;
+
+		/* handle index */
+
+		if (isset($index) && isset(self::$_values[$index]))
 		{
-			$l = array_merge($json_default, $json_current);
+			$values = self::$_values[$index];
+		}
+		else
+		{
+			$values = self::$_values;
 		}
 
-		/* later get method */
-		if (array_key_exists($name, $l))
+		/* values as needed */
+
+		if (is_null($key))
 		{
-			$output = $l[$name];
+			$output = $values;
+		}
+		else if (array_key_exists($key, $values))
+		{
+			$output = $values[$key];
+
+			/* convert encoding */
+
 			if (function_exists('mb_convert_encoding'))
 			{
-				$output = mb_convert_encoding($l[$name], s('charset'), 'utf-8, latin1');
+				$output = mb_convert_encoding($values[$key], Redaxscript_Db::forPrefixTable('settings')->where('name', 'charset')->findOne()->value, 'utf-8, latin1');
 			}
 		}
 		return $output;
+	}
+
+	/**
+	 * load from language files
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param string|array $json single or multiple language paths
+	 */
+
+	public static function load($json = null)
+	{
+		if (!is_array($json))
+		{
+			$json = array($json);
+		}
+
+		/* merge language files */
+
+		foreach ($json as $file)
+		{
+			if (file_exists($file))
+			{
+				$contents = file_get_contents($file);
+				$values = json_decode($contents, true);
+				if (is_array($values))
+				{
+					self::$_values = array_merge(self::$_values, $values);
+				}
+			}
+		}
 	}
 }

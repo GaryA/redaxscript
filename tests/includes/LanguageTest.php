@@ -13,13 +13,124 @@
 class Redaxscript_Language_Test extends PHPUnit_Framework_TestCase
 {
 	/**
-	 * testDummy
+	 * language
 	 *
-	 * @since 2.20
+	 * instance of the language class
+	 *
+	 * @var object
 	 */
 
-	public function testDummy()
+	protected $_language;
+
+	/**
+	 * setUp
+	 *
+	 * @since 2.2.0
+	 */
+
+	protected function setUp()
 	{
-		$this->assertTrue(true);
+		$this->_language = Redaxscript_Language::getInstance();
+		$this->_language->init('de');
+	}
+
+	/**
+	 * tearDown
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function tearDown()
+	{
+		$this->_language->init('en');
+	}
+
+	/**
+	 * testGet
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testGet()
+	{
+		/* result */
+
+		$result = $this->_language->get('home');
+
+		/* compare */
+
+		$this->assertEquals('Startseite', $result);
+	}
+
+	/**
+	 * testGetIndex
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testGetIndex()
+	{
+		/* result */
+
+		$result = $this->_language->get('name', '_package');
+
+		/* compare */
+
+		$this->assertEquals('Redaxscript', $result);
+	}
+
+	/**
+	 * testGetAll
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testGetAll()
+	{
+		/* result */
+
+		$result = $this->_language->get();
+
+		/* compare */
+
+		$this->assertArrayHasKey('home', $result);
+	}
+
+	/**
+	 * testGetInvalid
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testGetInvalid()
+	{
+		/* result */
+
+		$result = $this->_language->get('invalidKey');
+
+		/* compare */
+
+		$this->assertEquals(null, $result);
+	}
+
+	/**
+	 * testReset
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testReset()
+	{
+		/* setup */
+
+		$this->_language->reset();
+
+		/* result */
+
+		$result = $this->_language->getInstance();
+
+		/* compare */
+
+		$this->assertInstanceOf('Redaxscript_Language', $result);
 	}
 }

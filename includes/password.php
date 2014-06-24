@@ -22,7 +22,8 @@ function password_reset_form()
 
 	/* captcha object */
 
-	$captcha = new Redaxscript_Captcha();
+	$language = Redaxscript_Language::getInstance();
+	$captcha = new Redaxscript_Captcha($language);
 
 	/* collect output */
 

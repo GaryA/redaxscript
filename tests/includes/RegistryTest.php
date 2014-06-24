@@ -7,6 +7,7 @@
  *
  * @package Redaxscript
  * @category Tests
+ * @author Henry Ruhs
  * @author Gary Aylward
  */
 
@@ -30,17 +31,17 @@ class Redaxscript_Registry_Test extends PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-		$this->_registry = Redaxscript_Registry::instance();
+		$this->_registry = Redaxscript_Registry::getInstance();
 		$this->_registry->init();
 	}
 
 	/**
-	 * testSetAndGet
+	 * testGetAndSet
 	 *
 	 * @since 2.1.0
 	 */
 
-	public function testSetAndGet()
+	public function testGetAndSet()
 	{
 		/* setup */
 
@@ -56,33 +57,37 @@ class Redaxscript_Registry_Test extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * testGetInvalidKey
+	 * testGetAll
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testGetAll()
+	{
+		/* setup */
+
+		$this->_registry->set('testAll', 'testAll');
+
+		/* result */
+
+		$result = $this->_registry->get();
+
+		/* compare */
+
+		$this->assertArrayHasKey('testAll', $result);
+	}
+
+	/**
+	 * testGetInvalid
 	 *
 	 * @since 2.1.0
 	 */
 
-	public function testGetInvalidKey()
+	public function testGetInvalid()
 	{
 		/* result */
 
 		$result = $this->_registry->get('invalidKey');
-
-		/* compare */
-
-		$this->assertEquals(null, $result);
-	}
-
-	/**
-	 * testGetNull
-	 *
-	 * @since 2.1.0
-	 */
-
-	public function testGetNull()
-	{
-		/* result */
-
-		$result = $this->_registry->get();
 
 		/* compare */
 
@@ -103,11 +108,10 @@ class Redaxscript_Registry_Test extends PHPUnit_Framework_TestCase
 
 		/* result */
 
-		$result = $this->_registry->instance();
+		$result = $this->_registry->getInstance();
 
 		/* compare */
 
 		$this->assertInstanceOf('Redaxscript_Registry', $result);
 	}
 }
-

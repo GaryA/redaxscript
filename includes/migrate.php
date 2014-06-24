@@ -13,8 +13,9 @@
 
 function breadcrumb()
 {
-	$registry = Redaxscript_Registry::instance();
-	$breadcrumb = new Redaxscript_Breadcrumb($registry);
+	$registry = Redaxscript_Registry::getInstance();
+	$language = Redaxscript_Language::getInstance();
+	$breadcrumb = new Redaxscript_Breadcrumb($registry, $language);
 	echo $breadcrumb->render();
 }
 
@@ -31,7 +32,7 @@ function breadcrumb()
 
 function helper_class()
 {
-	$registry = Redaxscript_Registry::instance();
+	$registry = Redaxscript_Registry::getInstance();
 	$helper = new Redaxscript_Helper($registry);
 	echo $helper->getClass();
 }
@@ -49,7 +50,7 @@ function helper_class()
 
 function helper_subset()
 {
-	$registry = Redaxscript_Registry::instance();
+	$registry = Redaxscript_Registry::getInstance();
 	$helper = new Redaxscript_Helper($registry);
 	echo $helper->getSubset();
 }
@@ -96,7 +97,7 @@ function migrate_constants()
 }
 
 /**
- * shortcut
+ * language shortcut
  *
  * @since 2.2.0
  * @deprecated 2.0.0
@@ -105,16 +106,16 @@ function migrate_constants()
  * @category Migrate
  * @author Henry Ruhs
  *
- * @param string $name
+ * @param string $key
+ * @param string $index
  *
  * @return string
  */
 
-function l($name = null)
+function l($key = null, $index = null)
 {
-	$registry = Redaxscript_Registry::instance();
-	$language = new Redaxscript_Language($registry);
-	$output = $language->init($name);
+	$language = Redaxscript_Language::getInstance();
+	$output = $language->get($key, $index);
 	return $output;
 }
 

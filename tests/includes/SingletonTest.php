@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redaxscript Mailer Test
+ * Redaxscript Singleton Test
  *
  * @since 2.2.0
  *
@@ -10,7 +10,7 @@
  * @author Henry Ruhs
  */
 
-class Redaxscript_Mailer_Test extends PHPUnit_Framework_TestCase
+class Redaxscript_Singleton_Test extends PHPUnit_Framework_TestCase
 {
 	/**
 	 * testDummy

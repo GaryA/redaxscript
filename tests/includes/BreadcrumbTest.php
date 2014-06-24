@@ -15,14 +15,20 @@ include_once('tests/stubs.php');
 class Redaxscript_Breadcrumb_Test extends PHPUnit_Framework_TestCase
 {
 	/**
-	 * registry
-	 *
 	 * instance of the registry class
 	 *
 	 * @var object
 	 */
 
 	protected $_registry;
+
+	/**
+	 * instance of the language class
+	 *
+	 * @var object
+	 */
+
+	protected $_language;
 
 	/**
 	 * setUp
@@ -32,7 +38,8 @@ class Redaxscript_Breadcrumb_Test extends PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-		$this->_registry = Redaxscript_Registry::instance();
+		$this->_registry = Redaxscript_Registry::getInstance();
+		$this->_language = Redaxscript_Language::getInstance();
 	}
 
 	/**
@@ -72,6 +79,7 @@ class Redaxscript_Breadcrumb_Test extends PHPUnit_Framework_TestCase
 	 *
 	 * @param array $registry
 	 * @param array $expect
+	 *
 	 * @dataProvider providerGet
 	 */
 
@@ -80,7 +88,7 @@ class Redaxscript_Breadcrumb_Test extends PHPUnit_Framework_TestCase
 		/* setup */
 
 		$this->_registry->init($registry);
-		$breadcrumb = new Redaxscript_Breadcrumb($this->_registry);
+		$breadcrumb = new Redaxscript_Breadcrumb($this->_registry, $this->_language);
 
 		/* result */
 
@@ -98,6 +106,7 @@ class Redaxscript_Breadcrumb_Test extends PHPUnit_Framework_TestCase
 	 *
 	 * @param array $registry
 	 * @param string $expect
+	 *
 	 * @dataProvider providerRender
 	 */
 
@@ -106,7 +115,7 @@ class Redaxscript_Breadcrumb_Test extends PHPUnit_Framework_TestCase
 		/* setup */
 
 		$this->_registry->init($registry);
-		$breadcrumb = new Redaxscript_Breadcrumb($this->_registry);
+		$breadcrumb = new Redaxscript_Breadcrumb($this->_registry, $this->_language);
 
 		/* result */
 

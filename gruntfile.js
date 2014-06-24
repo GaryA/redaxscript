@@ -213,7 +213,8 @@ module.exports = function (grunt)
 			{
 				options:
 				{
-					coverageClover: 'clover.xml'
+					coverageClover: 'clover.xml',
+					coverageHtml: 'clover'
 				}
 			},
 			options:
@@ -299,7 +300,7 @@ module.exports = function (grunt)
 			},
 			pullUpstream:
 			{
-				command: 'git pull upstream master'
+				command: 'git pull upstream master && git pull upstream develop'
 			},
 			removeUpstream:
 			{
@@ -886,8 +887,7 @@ module.exports = function (grunt)
 		'csslint',
 		'htmlhint',
 		'phplint',
-		'toclint',
-		'phpunit:integration'
+		'toclint'
 	]);
 	grunt.registerTask('phplint',
 	[
@@ -925,6 +925,11 @@ module.exports = function (grunt)
 		'img',
 		'smushit',
 		'svgmin'
+	]);
+	grunt.registerTask('integration',
+	[
+		'default',
+		'phpunit:integration'
 	]);
 	grunt.registerTask('dist',
 	[

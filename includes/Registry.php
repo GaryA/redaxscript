@@ -10,7 +10,7 @@
  * @author Gary Aylward
  */
 
-class Redaxscript_Registry
+class Redaxscript_Registry extends Redaxscript_Singleton
 {
 	/**
 	 * array of registry values
@@ -19,24 +19,6 @@ class Redaxscript_Registry
 	 */
 
 	protected static $_values = array();
-
-	/**
-	 * instance of the class
-	 *
-	 * @var object
-	 */
-
-	protected static $_instance = null;
-
-	/**
-	 * constructor of the class
-	 *
-	 * @since 2.1.0
-	 */
-
-	private function __construct()
-	{
-	}
 
 	/**
 	 * init the class
@@ -60,18 +42,23 @@ class Redaxscript_Registry
 	 * @since 2.1.0
 	 *
 	 * @param string $key key of the item
-	 * @return string
+	 *
+	 * @return string|array
 	 */
 
 	public static function get($key = null)
 	{
-		if (array_key_exists($key, self::$_values))
+		$output = null;
+
+		/* values as needed */
+
+		if (is_null($key))
+		{
+			$output = self::$_values;
+		}
+		else if (array_key_exists($key, self::$_values))
 		{
 			$output = self::$_values[$key];
-		}
-		else
-		{
-			$output = null;
 		}
 		return $output;
 	}
@@ -88,35 +75,5 @@ class Redaxscript_Registry
 	public static function set($key = null, $value = null)
 	{
 		self::$_values[$key] = $value;
-	}
-
-	/**
-	 * instance of the class
-	 *
-	 * @since 2.1.0
-	 *
-	 * @return object
-	 */
-
-	public static function instance()
-	{
-		if (self::$_instance === null)
-		{
-			self::$_instance = new self;
-		}
-		return self::$_instance;
-	}
-
-	/**
-	 * reset the instance
-	 *
-	 * @since 2.1.0
-	 *
-	 * @return object
-	 */
-
-	public static function reset()
-	{
-		self::$_instance = null;
 	}
 }

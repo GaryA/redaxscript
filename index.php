@@ -3,14 +3,10 @@ error_reporting(0);
 
 /* include core files */
 
-include_once('config.php');
 include_once('includes/center.php');
 include_once('includes/check.php');
 include_once('includes/clean.php');
 include_once('includes/contents.php');
-include_once('includes/Detection.php');
-include_once('includes/Detection/Language.php');
-include_once('includes/Detection/Template.php');
 include_once('includes/generate.php');
 include_once('includes/get.php');
 include_once('includes/head.php');
@@ -19,14 +15,12 @@ include_once('includes/misc.php');
 include_once('includes/modules.php');
 include_once('includes/navigation.php');
 include_once('includes/query.php');
-include_once('includes/Registry.php');
 include_once('includes/replace.php');
 include_once('includes/search.php');
 include_once('includes/startup.php');
-
-/* vendor */
-
 include_once('vendor/j4mie/idiorm/idiorm.php');
+include_once('includes/Singleton.php');
+include_once('config.php');
 
 /* bootstrap */
 
@@ -113,17 +107,35 @@ if (FIRST_PARAMETER == 'admin' && LOGGED_IN == TOKEN)
 	}
 }
 
-/* include module files */
+/* module files as needed */
 
 $modules_include = modules_include();
 if ($modules_include)
 {
+	/* language object */
+
+	$language = Redaxscript_Language::getInstance();
+
+	/* process modules */
+
 	foreach ($modules_include as $value)
 	{
+		/* language */
+
+		$language->load(array(
+			'modules/' . $value . '/languages/en.json',
+			'modules/' . $value . '/languages/' . LANGUAGE . '.json'
+		));
+
+		/* config */
+
 		if (file_exists('modules/' . $value . '/config.php'))
 		{
 			include_once('modules/' . $value . '/config.php');
 		}
+
+		/* index */
+
 		if (file_exists('modules/' . $value . '/index.php'))
 		{
 			include_once('modules/' . $value . '/index.php');

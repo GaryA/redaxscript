@@ -30,7 +30,7 @@ class Redaxscript_Helper_Test extends PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-		$this->_registry = Redaxscript_Registry::instance();
+		$this->_registry = Redaxscript_Registry::getInstance();
 	}
 
 	/**
@@ -70,6 +70,7 @@ class Redaxscript_Helper_Test extends PHPUnit_Framework_TestCase
 	 *
 	 * @param array $registry
 	 * @param string $expect
+	 *
 	 * @dataProvider providerGetSubset
 	 */
 
@@ -96,6 +97,7 @@ class Redaxscript_Helper_Test extends PHPUnit_Framework_TestCase
 	 *
 	 * @param object $registry
 	 * @param string $expect
+	 *
 	 * @dataProvider providerGetClass
 	 */
 

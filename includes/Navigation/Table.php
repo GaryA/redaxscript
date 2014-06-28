@@ -60,9 +60,9 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 		$result = mysql_query($query);
 		$num_rows = mysql_num_rows($result);
-		if ($result == '' || $num_rows == '')
+		if ($result === false || (bool)$num_rows === false)
 		{
-			$error = l($wording_single . '_no') . l('point');
+			$error = $this->_language->get($wording_single . '_no') . $this->_language->get('point');
 		}
 		else if ($result)
 		{
@@ -76,7 +76,7 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 				/* if access granted */
 
-				if ($check_access == 1)
+				if ($check_access === 1)
 				{
 					if ($r)
 					{
@@ -89,7 +89,7 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 					/* build class string */
 
-					if ($this->_registry->get('lastParameter') == $alias && $this->_type != 'comments')
+					if ($this->_registry->get('lastParameter') === $alias && $this->_type !== 'comments')
 					{
 						$class_string = ' class="item_active"';
 					}
@@ -100,18 +100,18 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 					/* prepare metadata */
 
-					if ($this->_type == 'comments')
+					if ($this->_type === 'comments')
 					{
-						$description = $title = truncate($author . l('colon') . ' ' . strip_tags($text), 80, '...');
+						$description = $title = truncate($author . $this->_language->get('colon') . ' ' . strip_tags($text), 80, '...');
 					}
-					if ($description == '')
+					if ($description === '')
 					{
 						$description = $title;
 					}
 
 					/* build route */
 
-					if ($this->_type == 'categories' && $parent == 0 || $this->_type == 'articles' && $category == 0)
+					if ($this->_type === 'categories' && $parent === 0 || $this->_type === 'articles' && $category === 0)
 					{
 						$route = $alias;
 					}
@@ -126,7 +126,7 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 					/* collect children list output */
 
-					if ($this->_type == 'categories' && array_key_exists('children', $this->_options[$iteration]) && $this->_options[$iteration]['children'] === 1)
+					if ($this->_type === 'categories' && array_key_exists('children', $this->_options[$iteration]) && $this->_options[$iteration]['children'] === 1)
 					{
 						$this->_options[$iteration + 1] = array(
 							'parent' => $id,
@@ -147,7 +147,7 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 			if ($num_rows === $counter)
 			{
-				$error = l('access_no') . l('point');
+				$error = $this->_language->get('access_no') . $this->_language->get('point');
 			}
 		}
 
@@ -175,7 +175,7 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 		/* handle error */
 
-		if ($error && (!array_key_exists('parent', $this->_options[$iteration]) || $this->_options[$iteration]['parent'] == ''))
+		if ($error && (!array_key_exists('parent', $this->_options[$iteration]) || $this->_options[$iteration]['parent'] === ''))
 		{
 			$output = '<ul' .$id_string . $class_string . '><li>' . $error . '</li></ul>';
 		}
@@ -224,7 +224,7 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 
 		/* setup query filter */
 
-		if ($this->_type == 'categories' || $this->_type == 'articles')
+		if ($this->_type === 'categories' || $this->_type === 'articles')
 		{
 			/* setup filter alias option */
 

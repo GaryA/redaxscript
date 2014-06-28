@@ -43,13 +43,22 @@ class Redaxscript_Navigation_Directory extends Redaxscript_Navigation
 
 		foreach ($directory_array as $value)
 		{
+			if ($this->_type === 'language')
+			{
+				$value = substr($value, 0, 2);
+				$link_text = $this->_language->get($value, '_index');
+			}
+			else
+			{
+				$link_text = $value;
+			}
 			$class_string = ' class="' . $this->_type . '_' . $value;
-			if ($value == $this->_registry->get($this->_type))
+			if ($value === $this->_registry->get($this->_type))
 			{
 				$class_string .= ' item_active';
 			}
 			$class_string .= '"';
-			$output .= '<li' . $class_string . '>' . anchor_element('internal', '', '', $value, $this->_registry->get('fullRoute') . $this->_registry->get($this->_type . 'Route') . $value, '', 'rel="nofollow"') . '</li>';
+			$output .= '<li' . $class_string . '>' . anchor_element('internal', '', '', $link_text, $this->_registry->get('fullRoute') . $this->_registry->get($this->_type . 'Route') . $value, '', 'rel="nofollow"') . '</li>';
 		}
 
 		/* build id string */

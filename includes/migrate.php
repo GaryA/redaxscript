@@ -132,8 +132,9 @@ function l($key = null, $index = null)
 
 function login_list()
 {
-	$registry = Redaxscript_Registry::instance();
-	$login = new Redaxscript_Navigation_Login($registry);
+	$registry = Redaxscript_Registry::getInstance();
+	$language = Redaxscript_Language::getInstance();
+	$login = new Redaxscript_Navigation_Login($registry, $language);
 	echo $login->get();
 }
 
@@ -154,8 +155,9 @@ function templates_list($options = array())
 		'admin',
 		'install'
 	));
-	$registry = Redaxscript_Registry::instance();
-	$navigation = new Redaxscript_Navigation_Directory($registry, 'template', $options, $directory);
+	$registry = Redaxscript_Registry::getInstance();
+	$language = Redaxscript_Language::getInstance();
+	$navigation = new Redaxscript_Navigation_Directory($registry, $language, 'template', $options, $directory);
 	echo $navigation->get();
 }
 
@@ -173,8 +175,9 @@ function templates_list($options = array())
 function languages_list($options = array())
 {
 	$directory = New Redaxscript_Directory('languages', 'misc.php');
-	$registry = Redaxscript_Registry::instance();
-	$navigation = new Redaxscript_Navigation_Directory($registry, 'language', $options, $directory);
+	$registry = Redaxscript_Registry::getInstance();
+	$language = Redaxscript_Language::getInstance();
+	$navigation = new Redaxscript_Navigation_Directory($registry, $language, 'language', $options, $directory);
 	echo $navigation->get();
 }
 
@@ -191,7 +194,8 @@ function languages_list($options = array())
 
 function navigation_list($table = '', $options = array())
 {
-	$registry = Redaxscript_Registry::instance();
-	$navigation = new Redaxscript_Navigation_Table($registry, $table, $options);
+	$registry = Redaxscript_Registry::getInstance();
+	$language = Redaxscript_Language::getInstance();
+	$navigation = new Redaxscript_Navigation_Table($registry, $language, $table, $options);
 	echo $navigation->get();
 }

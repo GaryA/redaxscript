@@ -28,7 +28,7 @@ class Redaxscript_Request
 
 	private function __construct()
 	{
-		$this->init();
+		self::init();
 	}
 
 	/**
@@ -37,7 +37,7 @@ class Redaxscript_Request
 	 * @since 2.2.0
 	 */
 
-	public function init()
+	public static function init()
 	{
 		self::$_values = $GLOBALS;
 	}

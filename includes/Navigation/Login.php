@@ -21,21 +21,21 @@ class Redaxscript_Navigation_Login extends Redaxscript_Navigation
 
 	public function init($iteration = 0)
 	{
-		if ($this->_registry->get('loggedIn') == $this->_registry->get('token') && $this->_registry->get('firstParameter') != 'logout')
+		if ($this->_registry->get('loggedIn') === $this->_registry->get('token') && $this->_registry->get('firstParameter') !== 'logout')
 		{
-			$output = '<li class="item_logout">' . anchor_element('internal', '', '', l('logout'), 'logout', '', 'rel="nofollow"') . '</li>';
-			$output .= '<li class="item_administration">' . anchor_element('internal', '', '', l('administration'), 'admin', '', 'rel="nofollow"') . '</li>';
+			$output = '<li class="item_logout">' . anchor_element('internal', '', '', $this->_language->get('logout'), 'logout', '', 'rel="nofollow"') . '</li>';
+			$output .= '<li class="item_administration">' . anchor_element('internal', '', '', $this->_language->get('administration'), 'admin', '', 'rel="nofollow"') . '</li>';
 		}
 		else
 		{
-			$output = '<li class="item_login">' . anchor_element('internal', '', '', l('login'), 'login', '', 'rel="nofollow"') . '</li>';
+			$output = '<li class="item_login">' . anchor_element('internal', '', '', $this->_language->get('login'), 'login', '', 'rel="nofollow"') . '</li>';
 			if (s('reminder') == 1)
 			{
-				$output .= '<li class="item_reminder">' . anchor_element('internal', '', '', l('reminder'), 'reminder', '', 'rel="nofollow"') . '</li>';
+				$output .= '<li class="item_reminder">' . anchor_element('internal', '', '', $this->_language->get('reminder'), 'reminder', '', 'rel="nofollow"') . '</li>';
 			}
 			if (s('registration') == 1)
 			{
-				$output .= '<li class="item_registration">' . anchor_element('internal', '', '', l('registration'), 'registration', '', 'rel="nofollow"') . '</li>';
+				$output .= '<li class="item_registration">' . anchor_element('internal', '', '', $this->_language->get('registration'), 'registration', '', 'rel="nofollow"') . '</li>';
 			}
 		}
 		$output = '<ul class="list_login">' . $output . '</ul>';

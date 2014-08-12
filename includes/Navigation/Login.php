@@ -10,6 +10,7 @@
  */
 
 namespace Redaxscript\Navigation;
+use Redaxscript\Navigation;
 
 class Login extends Navigation
 {

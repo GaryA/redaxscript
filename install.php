@@ -3,19 +3,16 @@ error_reporting(0);
 
 /* include core files */
 
-include_once('includes/check.php');
 include_once('includes/clean.php');
 include_once('includes/generate.php');
 include_once('includes/get.php');
 include_once('includes/loader.php');
-include_once('includes/misc.php');
-include_once('includes/modules.php');
+include_once('includes/migrate.php');
 include_once('includes/password.php');
 include_once('includes/query.php');
 include_once('includes/replace.php');
 include_once('includes/startup.php');
 include_once('vendor/j4mie/idiorm/idiorm.php');
-include_once('includes/Singleton.php');
 
 /* install post */
 
@@ -24,12 +21,16 @@ install_post();
 /* write database config */
 
 write_config();
-include_once('config.php');
 
 /* bootstrap */
 
-startup();
 include_once('includes/Bootstrap.php');
+startup();
+
+/* migrate deprecated constants */
+
+$registry = Redaxscript\Registry::getInstance();
+$registry->init(migrate_constants());
 
 /* define meta */
 
@@ -38,7 +39,7 @@ define('ROBOTS', 'none');
 
 /* registry object */
 
-$registry = Redaxscript_Registry::getInstance();
+$registry = Redaxscript\Registry::getInstance();
 $registry->set('title', l('installation'));
 
 /* call loader else render template */
@@ -240,15 +241,16 @@ function install()
 	);
 	$subject = l('installation');
 	$bodyArray = array(
-		l('user') => $user,
-		l('password') => $password,
+		'<strong>' . l('user') . l('colon') . '</strong> ' . $user,
 		'<br />',
-		l('url') => $urlLink
+		'<strong>' . l('password') . l('colon') . '</strong> ' . $password,
+		'<br />',
+		'<strong>' . l('url') . l('colon') . '</strong> ' . $urlLink
 	);
 
 	/* mail object */
 
-	$mail = new Redaxscript_Mailer($toArray, $fromArray, $subject, $bodyArray);
+	$mail = new Redaxscript\Mailer($toArray, $fromArray, $subject, $bodyArray);
 	$mail->send();
 }
 
@@ -362,9 +364,10 @@ function install_post()
 function install_notification()
 {
 	global $d_host, $d_name, $d_user, $d_password, $name, $user, $password, $email;
-	if (is_writable('config.php') == '')
+
+	if (is_writable('Config.php') == '')
 	{
-		$error = l('file_permission_grant') . l('colon') . ' config.php';
+		$error = l('file_permission_grant') . l('colon') . ' Config.php';
 	}
 	else if (DB_CONNECTED == 0)
 	{
@@ -379,6 +382,8 @@ function install_notification()
 
 	else if ($_POST['install_post'])
 	{
+		$loginValidator = new Redaxscript_Validator_Login();
+		$emailValidator = new Redaxscript_Validator_Email();
 		if ($name == '')
 		{
 			$error = l('name_empty');
@@ -395,15 +400,15 @@ function install_notification()
 		{
 			$error = l('email_empty');
 		}
-		else if (check_login($user) == 0)
+		else if ($loginValidator->validate($user) == Redaxscript_Validator_Interface::VALIDATION_FAIL)
 		{
 			$error = l('user_incorrect');
 		}
-		else if (check_login($password) == 0)
+		else if ($loginValidator->validate($password) == Redaxscript_Validator_Interface::VALIDATION_FAIL)
 		{
 			$error = l('password_incorrect');
 		}
-		else if (check_email($email) == 0)
+		else if ($emailValidator->validate($email) == Redaxscript_Validator_Interface::VALIDATION_FAIL)
 		{
 			$error = l('email_incorrect');
 		}
@@ -441,7 +446,10 @@ function install_notification()
 function check_install()
 {
 	global $name, $user, $password, $email;
-	if ($_POST['install_post'] && DB_CONNECTED == 1 && $name && check_login($user) == 1 && check_login($password) == 1 && check_email($email) == 1)
+
+	$loginValidator = new Redaxscript_Validator_Login();
+	$emailValidator = new Redaxscript_Validator_Email();
+	if ($_POST['install_post'] && DB_CONNECTED == 1 && $name && $loginValidator->validate($user) == Redaxscript_Validator_Interface::VALIDATION_OK && $loginValidator->validate($password) == Redaxscript_Validator_Interface::VALIDATION_OK && $emailValidator->validate($email) == Redaxscript_Validator_Interface::VALIDATION_OK)
 	{
 		$output = 1;
 	}
@@ -471,8 +479,8 @@ function write_config()
 
 		/* pattern and replacement */
 
-		$pattern = '/\/\/\s+\[config].*?\/\/\s+\[\/config]/s';
-		$replacement = '// [config]
+		$pattern = '/\/\/\s+\@configStart.*?\/\/\s+\@configEnd/s';
+		$replacement = '// @configStart
 		\'type\' => \'mysql\',
 		\'host\' => \'' . $d_host . '\',
 		\'name\' => \'' . $d_name . '\',
@@ -480,13 +488,13 @@ function write_config()
 		\'password\' => \'' . $d_password . '\',
 		\'prefix\' => \'' . $d_prefix . '\',
 		\'salt\' => \'' . $d_salt . '\'
-		// [/config]';
+		// @configEnd';
 
 		/* process contents */
 
-		$content = file_get_contents('config.php');
+		$content = file_get_contents('Config.php');
 		$content = preg_replace($pattern, $replacement, $content);
-		file_put_contents('config.php', $content);
+		file_put_contents('Config.php', $content);
 	}
 }
 

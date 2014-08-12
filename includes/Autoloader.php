@@ -1,4 +1,5 @@
 <?php
+namespace Redaxscript;
 
 /**
  * parent class to automatically load required class files
@@ -11,7 +12,7 @@
  * @author Sven Weingartner
  */
 
-class Redaxscript_Autoloader
+class Autoloader
 {
 	/**
 	 * project namespace
@@ -19,15 +20,15 @@ class Redaxscript_Autoloader
 	 * @var string
 	 */
 
-	protected static $_nameSpace = 'Redaxscript_';
+	protected static $_namespace = 'Redaxscript';
 
 	/**
-	 * directory to search for class files
+	 * project class delimiter
 	 *
 	 * @var string
 	 */
 
-	protected static $_directory = 'includes';
+	protected static $_delimiter = '\\';
 
 	/**
 	 * file suffix
@@ -38,23 +39,45 @@ class Redaxscript_Autoloader
 	protected static $_fileSuffix = '.php';
 
 	/**
+	 * directory to search for class files
+	 *
+	 * @var string
+	 */
+
+	protected static $_directory = array(
+		'.',
+		'includes'
+	);
+
+	/**
 	 * init the class
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param string $directory specify a optional directory to search
+	 * @param mixed $directory optional directory to search
 	 */
 
 	public static function init($directory = null)
 	{
-		spl_autoload_register(array(__CLASS__, '_load'));
+		/* handle directory */
 
-		/* directory exists */
-
-		if (is_dir($directory))
+		if (is_array($directory))
 		{
 			self::$_directory = $directory;
 		}
+		else if($directory)
+		{
+			self::$_directory = array(
+				$directory
+			);
+		}
+
+		/* register autoload */
+
+		spl_autoload_register(array(
+			__CLASS__,
+			'_load'
+		));
 	}
 
 	/**
@@ -67,14 +90,23 @@ class Redaxscript_Autoloader
 
 	protected static function _load($className = null)
 	{
-		$fileName = str_replace(self::$_nameSpace, '', $className);
-		$filePath = str_replace('_', '/', $fileName) . self::$_fileSuffix;
+		$fileName = str_replace(self::$_namespace, '', $className);
+		$fileName = str_replace(self::$_delimiter, '/', $fileName);
+
+		/* temp */
+		$fileName = str_replace('_', '/', $fileName);
+		/* temp */
+
+		$filePath = $fileName . self::$_fileSuffix;
 
 		/* include files as needed */
 
-		if (file_exists(self::$_directory . '/' . $filePath))
+		foreach (self::$_directory as $directory)
 		{
-			include(self::$_directory . '/' . $filePath);
+			if (file_exists($directory . '/' . $filePath))
+			{
+				include_once($directory . '/' . $filePath);
+			}
 		}
 	}
 }

@@ -1,8 +1,9 @@
 <?php
-include_once('config.php');
+namespace Redaxscript\Tests;
+use Redaxscript\Config;
 
 /**
- * Redaxscript Config Test
+ * ConfigTest
  *
  * @since 2.2.0
  *
@@ -11,23 +12,27 @@ include_once('config.php');
  * @author Henry Ruhs
  */
 
-class Redaxscript_Config_Test extends PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
 	/**
-	 * testGet
+	 * testSetAndGet
 	 *
 	 * @since 2.2.0
 	 */
 
-	public function testGet()
+	public function testSetAndGet()
 	{
+		/* setup */
+
+		Config::set('host', 'localhost');
+
 		/* result */
 
-		$result = Redaxscript_Config::get('host');
+		$result = Config::get('host');
 
 		/* compare */
 
-		$this->assertEquals('redaxscript.com', $result);
+		$this->assertEquals('localhost', $result);
 	}
 
 	/**
@@ -40,7 +45,7 @@ class Redaxscript_Config_Test extends PHPUnit_Framework_TestCase
 	{
 		/* result */
 
-		$result = Redaxscript_Config::get();
+		$result = Config::get();
 
 		/* compare */
 

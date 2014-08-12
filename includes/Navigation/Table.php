@@ -11,6 +11,7 @@
 
 namespace Redaxscript\Navigation;
 use Redaxscript\Db;
+use Redaxscript\Navigation;
 
 class Table extends Navigation
 {

@@ -13,7 +13,8 @@
 
 function contents()
 {
-	hook(__FUNCTION__ . '_start');
+	$output = Redaxscript\Hook::trigger(__FUNCTION__ . '_start');
+	$aliasValidator = new Redaxscript\Validator\Alias();
 
 	/* query contents */
 
@@ -71,10 +72,11 @@ function contents()
 
 	else if ($result)
 	{
+		$accessValidator = new Redaxscript\Validator\Access();
 		while ($r = mysql_fetch_assoc($result))
 		{
 			$access = $r['access'];
-			$check_access = check_access($access, MY_GROUPS);
+			$check_access = $accessValidator->validate($access, MY_GROUPS);
 
 			/* if access granted */
 
@@ -87,23 +89,31 @@ function contents()
 						$$key = stripslashes($value);
 					}
 				}
-				if (LAST_TABLE == 'categories' || FULL_ROUTE == '' || check_alias(FIRST_PARAMETER, 1) == 1)
+				if (LAST_TABLE == 'categories' || FULL_ROUTE == ''
+					|| $aliasValidator->validate(FIRST_PARAMETER, Redaxscript\Validator\Alias::ALIAS_MODE_DEFAULT) == Redaxscript_Validator_Interface::VALIDATION_OK
+				)
 				{
 					$route = build_route('articles', $id);
 				}
 
-				/* registry and parser object */
+				/* parser object */
 
-				$registry = Redaxscript_Registry::getInstance();
-				$parser = new Redaxscript_Parser($registry, $text, $route);
+				$parser = new Redaxscript\Parser(Redaxscript\Registry::getInstance(), Redaxscript\Language::getInstance(), $text, $route, array(
+					'className' => array(
+						'break' => 'link_read_more',
+						'code' => 'box_code'
+					)
+				));
 
 				/* collect headline output */
 
-				$output .= hook('article_start');
+				$output .= Redaxscript\Hook::trigger('article_start', $id);
 				if ($headline == 1)
 				{
 					$output .= '<h2 class="title_content">';
-					if (LAST_TABLE == 'categories' || FULL_ROUTE == '' || check_alias(FIRST_PARAMETER, 1) == 1)
+					if (LAST_TABLE == 'categories' || FULL_ROUTE == ''
+						|| $aliasValidator->validate(FIRST_PARAMETER, Redaxscript\Validator\Alias::ALIAS_MODE_DEFAULT) == Redaxscript_Validator_Interface::VALIDATION_OK
+					)
 					{
 						$output .= anchor_element('internal', '', '', $title, $route);
 					}
@@ -117,7 +127,7 @@ function contents()
 				/* collect box output */
 
 				$output .= '<div class="box_content">' . $parser->getOutput();
-				$output .= '</div>' . hook('article_end');
+				$output .= '</div>' . Redaxscript\Hook::trigger('article_end', $id);
 
 				/* prepend admin dock */
 
@@ -162,6 +172,7 @@ function contents()
 	}
 	else
 	{
+		$output .= Redaxscript\Hook::trigger(__FUNCTION__ . '_end');
 		echo $output;
 
 		/* call comments as needed */
@@ -172,7 +183,7 @@ function contents()
 
 			if ($comments == 1 && COMMENTS_REPLACE == 1)
 			{
-				hook('comments_replace');
+				Redaxscript\Hook::trigger('comments_replace');
 			}
 
 			/* else native comments */
@@ -199,7 +210,6 @@ function contents()
 		$route = build_route('categories', CATEGORY);
 		pagination($sub_active, $sub_maximum, $route);
 	}
-	hook(__FUNCTION__ . '_end');
 }
 
 /**
@@ -212,14 +222,14 @@ function contents()
  * @category Contents
  * @author Henry Ruhs
  *
- * @param integer|string $filter
+ * @param mixed $filter
  */
 
 function extras($filter = '')
 {
 	if ($filter == '')
 	{
-		hook(__FUNCTION__ . '_start');
+		$output .= Redaxscript\Hook::trigger(__FUNCTION__ . '_start');
 	}
 
 	/* query extras */
@@ -244,10 +254,11 @@ function extras($filter = '')
 
 	if ($result)
 	{
+		$accessValidator = new Redaxscript\Validator\Access();
 		while ($r = mysql_fetch_assoc($result))
 		{
 			$access = $r['access'];
-			$check_access = check_access($access, MY_GROUPS);
+			$check_access = $accessValidator->validate($access, MY_GROUPS);
 
 			/* if access granted */
 
@@ -265,14 +276,18 @@ function extras($filter = '')
 
 				if ($category == CATEGORY || $article == ARTICLE || ($category == 0 && $article == 0))
 				{
-					/* registry and parser object */
+					/* parser object */
 
-					$registry = Redaxscript_Registry::getInstance();
-					$parser = new Redaxscript_Parser($registry, $text, $route);
+					$parser = new Redaxscript\Parser(Redaxscript\Registry::getInstance(), Redaxscript\Language::getInstance(), $text, $route, array(
+						'className' => array(
+							'break' => 'link_read_more',
+							'code' => 'box_code'
+						)
+					));
 
 					/* collect headline output */
 
-					$output .= hook('extra_start');
+					$output .= Redaxscript\Hook::trigger('extra_start', $id);
 					if ($headline == 1)
 					{
 						$output .= '<h3 class="title_extra">' . $title . '</h3>';
@@ -280,7 +295,7 @@ function extras($filter = '')
 
 					/* collect box output */
 
-					$output .= '<div class="box_extra">' . $parser->getOutput() . '</div>' . hook('extra_end');
+					$output .= '<div class="box_extra">' . $parser->getOutput() . '</div>' . Redaxscript\Hook::trigger('extra_end', $id);
 
 					/* prepend admin dock */
 
@@ -292,11 +307,11 @@ function extras($filter = '')
 			}
 		}
 	}
-	echo $output;
 	if ($filter == '')
 	{
-		hook(__FUNCTION__ . '_end');
+		$output .= Redaxscript\Hook::trigger(__FUNCTION__ . '_end');
 	}
+	echo $output;
 }
 
 /**
@@ -313,12 +328,13 @@ function extras($filter = '')
  * @param integer $id
  * @param string $author
  * @param string $date
+ *
  * @return string
  */
 
 function infoline($table = '', $id = '', $author = '', $date = '')
 {
-	hook(__FUNCTION__ . '_start');
+	$output = Redaxscript\Hook::trigger(__FUNCTION__ . '_start');
 	$time = date(s('time'), strtotime($date));
 	$date = date(s('date'), strtotime($date));
 	if ($table == 'articles')
@@ -328,7 +344,7 @@ function infoline($table = '', $id = '', $author = '', $date = '')
 
 	/* collect output */
 
-	$output = '<div class="box_infoline box_infoline_' . $table . '">';
+	$output .= '<div class="box_infoline box_infoline_' . $table . '">';
 
 	/* collect author output */
 
@@ -360,7 +376,7 @@ function infoline($table = '', $id = '', $author = '', $date = '')
 		$output .= '</span>';
 	}
 	$output .= '</div>';
-	$output .= hook(__FUNCTION__ . '_end');
+	$output .= Redaxscript\Hook::trigger(__FUNCTION__ . '_end');
 	return $output;
 }
 
@@ -381,7 +397,7 @@ function infoline($table = '', $id = '', $author = '', $date = '')
 
 function pagination($sub_active = '', $sub_maximum = '', $route = '')
 {
-	hook(__FUNCTION__ . '_start');
+	$output = Redaxscript\Hook::trigger(__FUNCTION__ . '_start');
 	$output .= '<ul class="list_pagination">';
 
 	/* collect first and previous output */
@@ -428,8 +444,8 @@ function pagination($sub_active = '', $sub_maximum = '', $route = '')
 		$output .= '<li class="item_last">' . anchor_element('internal', '', '', l('last'), $last_route) . '</li>';
 	}
 	$output .= '</ul>';
+	$output .= Redaxscript\Hook::trigger(__FUNCTION__ . '_end');
 	echo $output;
-	hook(__FUNCTION__ . '_end');
 }
 
 /**
@@ -450,7 +466,7 @@ function pagination($sub_active = '', $sub_maximum = '', $route = '')
 
 function notification($title = '', $text = '', $action = '', $route = '')
 {
-	hook(__FUNCTION__ . '_start');
+	$output = Redaxscript\Hook::trigger(__FUNCTION__ . '_start');
 
 	/* detect needed mode */
 
@@ -467,7 +483,7 @@ function notification($title = '', $text = '', $action = '', $route = '')
 
 	if ($title)
 	{
-		$output = '<h2 class="title_content title_notification">' . $title . '</h2>';
+		$output .= '<h2 class="title_content title_notification">' . $title . '</h2>';
 	}
 	$output .= '<div class="box_content box_notification">';
 
@@ -485,6 +501,6 @@ function notification($title = '', $text = '', $action = '', $route = '')
 		$output .= anchor_element('internal', '', 'js_forward_notification button' . $suffix, $action, $route);
 	}
 	$output .= '</div>';
+	$output .= Redaxscript\Hook::trigger(__FUNCTION__ . '_end');
 	echo $output;
-	hook(__FUNCTION__ . '_end');
 }

@@ -1,34 +1,29 @@
 <?php
+namespace Redaxscript;
 
-/* include files */
+/* include as needed */
 
 include_once('includes/Autoloader.php');
-include_once('includes/Singleton.php');
-include_once('includes/migrate.php');
-include_once('config.php');
 
 /* init */
 
-Redaxscript_Autoloader::init();
-Redaxscript_Request::init();
+Autoloader::init();
+Request::init();
 
 /* registry and config */
 
-$registry = Redaxscript_Registry::getInstance();
-$config = Redaxscript_Config::getInstance();
+$registry = Registry::getInstance();
+$config = Config::getInstance();
 
-/* migrate deprecated constants */
+/* database and hook */
 
-$registry->init(migrate_constants());
-
-/* connect database */
-
-Redaxscript_Db::connect($registry, $config);
+Db::init($config);
+Hook::init($registry);
 
 /* detection */
 
-$detectionLanguage = New Redaxscript_Detection_Language($registry);
-$detectionTemplate = New Redaxscript_Detection_Template($registry);
+$detectionLanguage = new Detection\Language($registry);
+$detectionTemplate = new Detection\Template($registry);
 
 /* set language and template */
 
@@ -37,7 +32,7 @@ $registry->set('template', $detectionTemplate->getOutput());
 
 /* language */
 
-$language = Redaxscript_Language::getInstance();
+$language = Language::getInstance();
 $language->init($registry->get('language'));
 
 /* define deprecated constants */

@@ -1,8 +1,11 @@
 <?php
-include_once('tests/stubs.php');
+namespace Redaxscript\Tests;
+use Redaxscript\Captcha;
+use Redaxscript\Db;
+use Redaxscript\Language;
 
 /**
- * Redaxscript Captcha Test
+ * CaptchaTest
  *
  * @since 2.2.0
  *
@@ -12,7 +15,7 @@ include_once('tests/stubs.php');
  * @author Gary Aylward
  */
 
-class Redaxscript_Captcha_Test extends PHPUnit_Framework_TestCase
+class CaptchaTest extends TestCase
 {
 	/**
 	 * instance of the language class
@@ -30,20 +33,52 @@ class Redaxscript_Captcha_Test extends PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-		$this->_language = Redaxscript_Language::getInstance();
+		$this->_language = Language::getInstance();
 	}
 
 	/**
-	 * testCaptcha
+	 * tearDown
 	 *
 	 * @since 2.2.0
 	 */
 
-	public function testCaptcha()
+	protected function tearDown()
+	{
+		Db::forPrefixTable('settings')->where('name', 'captcha')->findOne()->set('value', 0)->save();
+	}
+
+	/**
+	 * testGetTask
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testGetTask()
 	{
 		/* setup */
 
-		$captcha = new Redaxscript_Captcha($this->_language);
+		$captcha = new Captcha($this->_language);
+
+		/* result */
+
+		$task = $captcha->getTask();
+
+		/* compare */
+
+		$this->assertTrue(is_string($task));
+	}
+
+	/**
+	 * testGetSolution
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testGetSolution()
+	{
+		/* setup */
+
+		$captcha = new Captcha($this->_language);
 
 		/* result */
 
@@ -53,5 +88,47 @@ class Redaxscript_Captcha_Test extends PHPUnit_Framework_TestCase
 		/* compare */
 
 		$this->assertEquals($hash, sha1($raw));
+	}
+
+	/**
+	 * testPlus
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testPlus()
+	{
+		/* setup */
+
+		Db::forPrefixTable('settings')->where('name', 'captcha')->findOne()->set('value', 2)->save();
+
+		/* result */
+
+		$result = new Captcha($this->_language);
+
+		/* compare */
+
+		$this->assertTrue(is_object($result));
+	}
+
+	/**
+	 * testMinus
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function testMinus()
+	{
+		/* setup */
+
+		Db::forPrefixTable('settings')->where('name', 'captcha')->findOne()->set('value', 3)->save();
+
+		/* result */
+
+		$result = new Captcha($this->_language);
+
+		/* compare */
+
+		$this->assertTrue(is_object($result));
 	}
 }

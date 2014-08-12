@@ -13,9 +13,13 @@
 
 function breadcrumb()
 {
-	$registry = Redaxscript\Registry::getInstance();
-	$language = Redaxscript\Language::getInstance();
-	$breadcrumb = new Redaxscript\Breadcrumb($registry, $language);
+	$options = array(
+		'className' => array(
+			'list' => 'list_breadcrumb',
+			'divider' => 'divider'
+		)
+	);
+	$breadcrumb = new Redaxscript\Breadcrumb(Redaxscript\Registry::getInstance(), Redaxscript\Language::getInstance(), $options);
 	echo $breadcrumb->render();
 }
 
@@ -32,8 +36,7 @@ function breadcrumb()
 
 function helper_class()
 {
-	$registry = Redaxscript\Registry::getInstance();
-	$helper = new Redaxscript\Helper($registry);
+	$helper = new Redaxscript\Helper(Redaxscript\Registry::getInstance());
 	echo $helper->getClass();
 }
 
@@ -50,9 +53,31 @@ function helper_class()
 
 function helper_subset()
 {
-	$registry = Redaxscript\Registry::getInstance();
-	$helper = new Redaxscript\Helper($registry);
+	$helper = new Redaxscript\Helper(Redaxscript\Registry::getInstance());
 	echo $helper->getSubset();
+}
+
+/**
+ * language shortcut
+ *
+ * @since 2.2.0
+ * @deprecated 2.0.0
+ *
+ * @package Redaxscript
+ * @category Migrate
+ * @author Henry Ruhs
+ *
+ * @param string $key
+ * @param string $index
+ *
+ * @return string
+ */
+
+function l($key = null, $index = null)
+{
+	$language = Redaxscript\Language::getInstance();
+	$output = $language->get($key, $index);
+	return $output;
 }
 
 /**
@@ -93,29 +118,6 @@ function migrate_constants()
 
 		$output[$key] = $value;
 	}
-	return $output;
-}
-
-/**
- * language shortcut
- *
- * @since 2.2.0
- * @deprecated 2.0.0
- *
- * @package Redaxscript
- * @category Migrate
- * @author Henry Ruhs
- *
- * @param string $key
- * @param string $index
- *
- * @return string
- */
-
-function l($key = null, $index = null)
-{
-	$language = Redaxscript\Language::getInstance();
-	$output = $language->get($key, $index);
 	return $output;
 }
 
@@ -170,7 +172,7 @@ function templates_list($options = array())
 
 function languages_list($options = array())
 {
-	$directory = New Redaxscript_Directory('languages', 'misc.php');
+	$directory = New Redaxscript\Directory('languages', 'misc.php');
 	$navigation = new Redaxscript\Navigation\Directory(Redaxscript\Registry::getInstance(), Redaxscript\Language::getInstance(), 'language', $options, $directory);
 	echo $navigation->getOutput();
 }

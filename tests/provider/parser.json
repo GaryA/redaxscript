@@ -7,7 +7,7 @@
 		},
 		"hello<break> world",
 		"hello/world",
-		"hello<a>Read more</a>"
+		"hello<a href=\"hello/world\" class=\"link-read-more\" title=\"Read more\">Read more</a>"
 	],
 	[
 		{
@@ -20,20 +20,10 @@
 		"hello world"
 	],
 	[
-		{
-			"lastTable": "articles",
-			"fullRoute": "hello/world",
-			"firstParameter": "login"
-		},
-		"hello<break> world",
-		"hello/world",
-		"hello<a>Read more</a>"
-	],
-	[
 		"",
 		"hello <code>world</code>",
 		"",
-		"hello <code class=\"box_code\">world</code>"
+		"hello <code class=\"box-code\">world</code>"
 	],
 	[
 		"",
@@ -49,6 +39,12 @@
 	],
 	[
 		"",
+		"<function>invalid<function>",
+		"",
+		""
+	],
+	[
+		"",
 		"<function>{\"md5\":{\"string\":\"hello world\"}}<function>",
 		"",
 		"5eb63bbbe01eeed093cb22bb8f5acdc3"
@@ -56,6 +52,12 @@
 	[
 		"",
 		"<function>{\"exec\":{\"input\":\"dir\"}}<function>",
+		"",
+		""
+	],
+	[
+		"",
+		"<function>{\"invalid\":{\"\":\"\"}}<function>",
 		"",
 		""
 	]

@@ -1,4 +1,5 @@
 <?php
+namespace Redaxscript;
 
 /**
  * parent class to store database config
@@ -10,7 +11,7 @@
  * @author Henry Ruhs
  */
 
-class Redaxscript_Config extends Redaxscript_Singleton
+class Config extends Singleton
 {
 	/**
 	 * database config
@@ -19,15 +20,15 @@ class Redaxscript_Config extends Redaxscript_Singleton
 	 */
 
 	private static $_config = array(
-		// [config]
-		'type' => 'mysql',
-		'host' => 'redaxscript.com',
-		'name' => 'd01ae38a',
-		'user' => 'd01ae38a',
-		'password' => 'travis',
+		// @configStart
+		'type' => '',
+		'host' => '',
+		'name' => '',
+		'user' => '',
+		'password' => '',
 		'prefix' => '',
 		'salt' => ''
-		// [/config]
+		// @configEnd
 	);
 
 	/**
@@ -42,7 +43,7 @@ class Redaxscript_Config extends Redaxscript_Singleton
 
 	public static function get($key = null)
 	{
-		$output = null;
+		$output = false;
 
 		/* values as needed */
 
@@ -55,5 +56,19 @@ class Redaxscript_Config extends Redaxscript_Singleton
 			$output = self::$_config[$key];
 		}
 		return $output;
+	}
+
+	/**
+	 * set item to config
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param string $key key of the item
+	 * @param mixed $value value of the item
+	 */
+
+	public static function set($key = null, $value = null)
+	{
+		self::$_config[$key] = $value;
 	}
 }

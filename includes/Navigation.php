@@ -63,14 +63,14 @@ abstract class Navigation
 	 *
 	 * @since 2.2.0
 	 *
-	 * @param Redaxscript_Registry $registry instance of the registry class
-	 * @param Redaxscript_Language $language instance of the language class
+	 * @param \Redaxscript\Registry $registry instance of the registry class
+	 * @param \Redaxscript\Language $language instance of the language class
 	 * @param string $type type of directory object
 	 * @param array $options array of options to control the list
-	 * @param Redaxscript_Directory $directory instance of the directory class
+	 * @param \Redaxscript\Directory $directory instance of the directory class
 	 */
 
-	public function __construct(Redaxscript_Registry $registry, Redaxscript_Language $language, $type = '', $options = array(), Redaxscript_Directory $directory = null)
+	public function __construct(Registry $registry, Language $language, $type = '', $options = array(), Directory $directory = null)
 	{
 		$this->_registry = $registry;
 		$this->_language = $language;

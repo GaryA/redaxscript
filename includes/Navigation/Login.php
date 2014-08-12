@@ -9,17 +9,17 @@
  * @author Gary Aylward
  */
 
-class Redaxscript_Navigation_Login extends Redaxscript_Navigation
+namespace Redaxscript\Navigation;
+
+class Login extends Navigation
 {
 	/**
 	 * initialise the class
 	 *
 	 * @since 2.2.0
-	 *
-	 * @param int $iteration not used
 	 */
 
-	public function init($iteration = 0)
+	public function init()
 	{
 		if ($this->_registry->get('loggedIn') === $this->_registry->get('token') && $this->_registry->get('firstParameter') !== 'logout')
 		{

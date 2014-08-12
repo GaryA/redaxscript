@@ -9,216 +9,88 @@
  * @author Gary Aylward
  */
 
-class Redaxscript_Navigation_Table extends Redaxscript_Navigation
+namespace Redaxscript\Navigation;
+use Redaxscript\Db;
+
+class Table extends Navigation
 {
 	/**
 	 * initialise the class
 	 *
 	 * @since 2.2.0
-	 *
-	 * @param int $iteration iteration level through nested lists
 	 */
 
-	public function init($iteration = 0)
+	public function init()
 	{
-		$prefix = hook(__FUNCTION__ . '_start');
-		$output = '';
-		$error = '';
-
-		/* fallback */
-
-		if (!array_key_exists('order', $this->_options[$iteration]) || $this->_options[$iteration]['order'] === '')
-		{
-			$this->_options[$iteration]['order'] = s('order');
-		}
-		if (!array_key_exists('limit', $this->_options[$iteration]) || $this->_options[$iteration]['limit'] === '')
-		{
-			$this->_options[$iteration]['limit'] = s('limit');
-		}
-
-		/* switch table */
-
-		switch ($this->_type)
-		{
-			case 'categories':
-				$wording_single = 'category';
-				$query_parent = 'parent';
-				break;
-			case 'articles':
-				$wording_single = 'article';
-				$query_parent = 'category';
-				break;
-			case 'comments':
-				$wording_single = 'comment';
-				$query_parent = 'article';
-				break;
-		}
-
-		$query = $this->_buildQuery($query_parent, $iteration);
-
+		$this->_navigationArray = array();
+		$query = $this->_buildQuery();
 		/* query result */
+		/*
+		$resultSet = mysql_query($query);
+		*/
+		$resultSet = $query -> find_many();
 
-		$result = mysql_query($query);
-		$num_rows = mysql_num_rows($result);
-		if ($result === false || (bool)$num_rows === false)
-		{
-			$error = $this->_language->get($wording_single . '_no') . $this->_language->get('point');
-		}
-		else if ($result)
-		{
-			/* collect output */
-
-			$counter = 0;
-			while ($r = mysql_fetch_assoc($result))
-			{
-				$access = $r['access'];
-				$check_access = check_access($access, $this->_registry->get('myGroups'));
-
-				/* if access granted */
-
-				if ($check_access === 1)
-				{
-					if ($r)
-					{
-						foreach ($r as $key => $value)
-						{
-							$$key = stripslashes($value);
-						}
-					}
-					$alias = !isset($alias) ? '' : $alias;
-
-					/* build class string */
-
-					if ($this->_registry->get('lastParameter') === $alias && $this->_type !== 'comments')
-					{
-						$class_string = ' class="item_active"';
-					}
-					else
-					{
-						$class_string = '';
-					}
-
-					/* prepare metadata */
-
-					if ($this->_type === 'comments')
-					{
-						$description = $title = truncate($author . $this->_language->get('colon') . ' ' . strip_tags($text), 80, '...');
-					}
-					if ($description === '')
-					{
-						$description = $title;
-					}
-
-					/* build route */
-
-					if ($this->_type === 'categories' && $parent === 0 || $this->_type === 'articles' && $category === 0)
-					{
-						$route = $alias;
-					}
-					else
-					{
-						$route = build_route($this->_type, $id);
-					}
-
-					/* collect item output */
-
-					$output .= '<li' . $class_string . '>' . anchor_element('internal', '', '', $title, $route, $description);
-
-					/* collect children list output */
-
-					if ($this->_type === 'categories' && array_key_exists('children', $this->_options[$iteration]) && $this->_options[$iteration]['children'] === 1)
-					{
-						$this->_options[$iteration + 1] = array(
-							'parent' => $id,
-							'class' => 'list_children'
-						);
-						$this->init($iteration + 1);
-						$output .= $this->get();
-					}
-					$output .= '</li>';
-				}
-				else
-				{
-					$counter++;
-				}
-			}
-
-			/* handle access */
-
-			if ($num_rows === $counter)
-			{
-				$error = $this->_language->get('access_no') . $this->_language->get('point');
-			}
-		}
-
-		/* build id string */
-
-		if (array_key_exists('id', $this->_options[$iteration]))
-		{
-			$id_string = ' id="' . $this->_options[$iteration]['id'] . '"';
-		}
-		else
-		{
-			$id_string = '';
-		}
-
-		/* build class string */
-
-		if (array_key_exists('class', $this->_options[$iteration]))
-		{
-			$class_string = ' class="' . $this->_options[$iteration]['class'] . '"';
-		}
-		else
-		{
-			$class_string = ' class="list_' . $this->_type . '"';
-		}
-
-		/* handle error */
-
-		if ($error && (!array_key_exists('parent', $this->_options[$iteration]) || $this->_options[$iteration]['parent'] === ''))
-		{
-			$output = '<ul' .$id_string . $class_string . '><li>' . $error . '</li></ul>';
-		}
-
-		/* else collect list output */
-
-		else if ($output)
-		{
-			$output = '<ul' .$id_string . $class_string . '>' . $output . '</ul>';
-		}
-		$output = $prefix . $output . hook(__FUNCTION__ . '_end');
-		$this->_output = $output;
+		$this->_buildArray($resultSet, $this->_navigationArray);
+		$this->render();
 	}
 
 	/**
 	 * build the database query
 	 *
 	 * @since 2.2.0
-	 * @deprecated 2.2.0
 	 *
-	 * @param string $query_parent
-	 * @param int $iteration
-	 *
-	 * @return string
+	 * @return object
 	 */
 
-	protected function _buildQuery($query_parent = '', $iteration = 0)
+	protected function _buildQuery()
 	{
+		switch ($this->_type)
+		{
+			case 'categories':
+				$queryParent = 'parent';
+				break;
+			case 'articles':
+				$queryParent = 'category';
+				break;
+			case 'comments':
+				$queryParent = 'article';
+				break;
+			default:
+				$queryParent = '';
+				break;
+		}
+
+		/* fallback */
+
+		if (!array_key_exists('order', $this->_options) || $this->_options['order'] === '')
+		{
+			$this->_options['order'] = s('order');
+		}
+		if (!array_key_exists('limit', $this->_options) || $this->_options['limit'] === '')
+		{
+			$this->_options['limit'] = s('limit');
+		}
+
 		/* query contents */
 
+		$query = Db::forPrefixTable($this->_type) -> where_any_is(array(
+			array('language' => $this->_registry->get('language'), 'status' => 1),
+			array('language' => '', 'status' => 1)));
+/*
 		$query = 'SELECT * FROM ' . PREFIX . $this->_type . ' WHERE (language = \'' . $this->_registry->get('language') . '\' || language = \'\') && status = 1';
-
+*/
 		/* setup parent */
 
-		if ($query_parent)
+		if ($queryParent)
 		{
-			if (array_key_exists('parent', $this->_options[$iteration]))
+			if (array_key_exists('parent', $this->_options))
 			{
-				$query .= ' && ' . $query_parent . ' = ' . $this->_options[$iteration]['parent'];
-			}
-			else if ($this->_type == 'categories')
-			{
-				$query .= ' && ' . $query_parent . ' = 0';
+/*
+
+				$query .= ' && ' . $queryParent . ' = ' . $this->_options['parent'];
+*/
+				$query = $query -> where($queryParent, $this->_options['parent']);
+
 			}
 		}
 
@@ -228,22 +100,248 @@ class Redaxscript_Navigation_Table extends Redaxscript_Navigation
 		{
 			/* setup filter alias option */
 
-			if (array_key_exists('filter_alias', $this->_options[$iteration]))
+			if (array_key_exists('filter_alias', $this->_options))
 			{
-				$query .= ' && alias IN (' . $this->_options[$iteration]['filter_alias'] . ')';
+/*				$query .= ' && alias IN (' . $this->_options['filter_alias'] . ')';
+*/
+				$query = $query -> where_in('alias', $this->_options['filter_alias']);
+
 			}
 
 			/* setup filter rank option */
 
-			if (array_key_exists('filter_rank', $this->_options[$iteration]))
+			if (array_key_exists('filter_rank', $this->_options))
 			{
-				$query .= ' && rank IN (' . $this->_options[$iteration]['filter_rank'] . ')';
+/*				$query .= ' && rank IN (' . $this->_options['filter_rank'] . ')';
+*/
+				$query = $query -> where_in('rank', $this->_options['filter_rank']);
+
 			}
 		}
 
 		/* setup rank and limit */
 
-		$query .= ' ORDER BY rank ' . $this->_options[$iteration]['order'] . ' LIMIT ' . $this->_options[$iteration]['limit'];
+/*		$query .= ' ORDER BY rank ' . $this->_options['order'] . ' LIMIT ' . $this->_options['limit'];
+*/
+		$query = $query -> order_by_asc('rank');
+		$query = $query -> order_by_desc('rank');
+		$query = $query -> limit($this->_options['limit']);
+
 		return $query;
+	}
+
+	/**
+	 * build the navigation array (recursively)
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param array $resultSet result set from db query
+	 * @param array &$array pass the current level of the navigationArray by reference
+	 * @param int $filter parent id acts as filter for sub-categories
+	 */
+
+	protected function _buildArray($resultSet, &$array, $filter = 0)
+	{
+		$index = 0;
+		$errorCount = 0;
+		if (count($resultSet) > 0)
+		{
+			/* iterate over the record set */
+
+			foreach ($resultSet as $record)
+			{
+				if (check_access($record->access, $this->_registry->get('myGroups')))
+				{
+					if (($this->_type === 'categories' && (int)$record->parent === $filter) || $this->_type === 'articles' || $this->_type === 'comments')
+					{
+						/* filter categories (and articles?) */
+
+						if ($this->_type === 'comments')
+						{
+							/* create comment description from author and start of text */
+
+							$array[$index]['description'] = $array[$index]['title'] = truncate($record->author . $this->_language->get('colon') . ' ' . strip_tags($record->text), 80, '...');
+						}
+						else
+						{
+							$array[$index]['description'] = $record->description;
+
+							if ($array[$index]['description'] === '')
+							{
+								/* if there is no description use the title */
+
+								$array[$index]['description'] = $record->title;
+							}
+							$array[$index]['title'] = $record->title;
+
+							/* create route to item */
+
+							if ($this->_type === 'categories' && (int)$record->parent === 0)
+							{
+								$array[$index]['route'] = $record->alias;
+							}
+							else
+							{
+								$array[$index]['route'] = build_route($this->_type, $record->id);
+							}
+						}
+
+						/* set active flag */
+
+						if ($this->_registry->get('lastParameter') === $record->alias && $this->_type !== 'comments')
+						{
+							$array[$index]['active'] = true;
+						}
+						else
+						{
+							$array[$index]['active'] = false;
+						}
+
+						if ($this->_type === 'categories' && array_key_exists('children', $this->_options) && $this->_options['children'] === 1)
+						{
+							/* recurse into sub-categories */
+
+							$this->_buildArray($resultSet, $array[$index], (int)$record->id);
+						}
+						$index++;
+					}
+				}
+				else
+				{
+					/* access denied */
+
+					$errorCount++;
+				}
+			}
+			if ($errorCount === count($resultSet))
+			{
+				$array[$index]['error'] = true;
+			}
+		}
+	}
+
+	/**
+	 * render the navigation array as html
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function render()
+	{
+		$prefix = hook(__FUNCTION__ . '_start');
+		$output = '';
+		$error = '';
+
+		/* switch table */
+
+		switch ($this->_type)
+		{
+			case 'categories':
+				$wording_single = 'category';
+				break;
+			case 'articles':
+				$wording_single = 'article';
+				break;
+			case 'comments':
+				$wording_single = 'comment';
+				break;
+			default:
+				$wording_single = '';
+				break;
+		}
+
+		$output = $this->_buildLinks($this->_navigationArray, $output);
+
+		if ($output === '')
+		{
+			$error = $this->_language->get($wording_single . '_no') . $this->_language->get('point');
+		}
+
+		/* build id string */
+
+		$idString = $this->_buildIdString();
+
+		/* build class string */
+
+		$classString = $this->_buildClassString();
+
+		/* handle error */
+
+		if ($error && (!array_key_exists('parent', $this->_options) || $this->_options['parent'] === ''))
+		{
+			$output = '<ul' .$idString . $classString . '><li>' . $error . '</li></ul>';
+		}
+
+		$output = $prefix . $output . hook(__FUNCTION__ . '_end');
+		$this->_output = $output;
+	}
+
+	/**
+	 * build a nested list of hyperlinks (recursively)
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param array &$array level of navigationArray to be processed by reference
+	 * @param string $output pass in the output string to append links to
+	 * @param int $level level of the heirarchy
+	 *
+	 * @return string
+	 */
+
+	protected function _buildLinks(&$array, $output, $level = 0)
+	{
+		$index = 0;
+		if (array_key_exists($index, $array))
+		{
+			/* build id string */
+
+			$idString = $this->_buildIdString();
+
+			/* build class string */
+
+			if ($level === 0)
+			{
+				$classString = $this->_buildClassString();
+			}
+			else
+			{
+				$classString = ' class="list_children"';
+			}
+			$output .= '<ul' .$idString . $classString . '>';
+			while (array_key_exists($index, $array))
+			{
+				/* build class string */
+
+				if ($array[$index]['active'])
+				{
+					$class_string = ' class="item_active"';
+				}
+				else
+				{
+					$class_string = '';
+				}
+
+				if (array_key_exists('error', $array[$index]))
+				{
+					$output .= '<li' . $class_string . '>' . $this->_language->get('access_no') . $this->_language->get('point') . '</li>';
+				}
+				else
+				{
+
+					/* collect item output */
+
+					$output .= '<li' . $class_string . '>' . '<a href="' . REWRITE_ROUTE . $array[$index]['route'] . '" title="' . $array[$index]['description'] . '">' . $array[$index]['title'] . '</a>';
+
+					/* get sub-list items */
+
+					$output = $this->_buildLinks($array[$index], $output, $level + 1);
+
+					$output .= '</li>';
+				}
+				$index++;
+			}
+			$output .= '</ul>';
+		}
+		return $output;
 	}
 }

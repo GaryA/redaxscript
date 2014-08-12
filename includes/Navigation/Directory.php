@@ -9,17 +9,17 @@
  * @author Gary Aylward
  */
 
-class Redaxscript_Navigation_Directory extends Redaxscript_Navigation
+namespace Redaxscript\Navigation;
+
+class Directory extends Navigation
 {
 	/**
 	 * initialise the class
 	 *
 	 * @since 2.2.0
-	 *
-	 * @param int $iteration not used
 	 */
 
-	public function init($iteration = 0)
+	public function init()
 	{
 		$prefix = hook(__FUNCTION__ . '_start');
 		$output = '';
@@ -63,9 +63,9 @@ class Redaxscript_Navigation_Directory extends Redaxscript_Navigation
 
 		/* build id string */
 
-		if (array_key_exists('id', $this->_options[$iteration]))
+		if (array_key_exists('id', $this->_options))
 		{
-			$id_string = ' id="' . $this->_options[$iteration]['id'] . '"';
+			$id_string = ' id="' . $this->_options['id'] . '"';
 		}
 		else
 		{
@@ -74,9 +74,9 @@ class Redaxscript_Navigation_Directory extends Redaxscript_Navigation
 
 		/* build class string */
 
-		if (array_key_exists('class', $this->_options[$iteration]))
+		if (array_key_exists('class', $this->_options))
 		{
-			$class_string = ' class="' . $this->_options[$iteration]['class'] . '"';
+			$class_string = ' class="' . $this->_options['class'] . '"';
 		}
 		else
 		{

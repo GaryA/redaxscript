@@ -11,6 +11,7 @@
 
 namespace Redaxscript\Navigation;
 use Redaxscript\Navigation;
+use Redaxscript;
 
 class Directory extends Navigation
 {
@@ -22,7 +23,7 @@ class Directory extends Navigation
 
 	public function init()
 	{
-		$prefix = hook(__FUNCTION__ . '_start');
+		$prefix = Redaxscript\Hook::trigger(__FUNCTION__ . '_start');
 		$output = '';
 
 		/* define option variables */
@@ -90,7 +91,7 @@ class Directory extends Navigation
 		{
 			$output = '<ul' .$id_string . $class_string . '>' . $output . '</ul>';
 		}
-		$output = $prefix . $output . hook(__FUNCTION__ . '_end');
+		$output = $prefix . $output . Redaxscript\Hook::trigger(__FUNCTION__ . '_end');
 		$this->_output = $output;
 	}
 }

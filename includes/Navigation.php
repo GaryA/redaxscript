@@ -56,6 +56,12 @@ abstract class Navigation
 
 	protected $_output;
 
+	/**
+	 * raw navigation array
+	 *
+	 * @var array
+	 */
+
 	protected $_navigationArray;
 
 	/**
@@ -89,7 +95,7 @@ abstract class Navigation
 	abstract public function init();
 
 	/**
-	 * get the navigation list
+	 * get the rendered navigation list
 	 *
 	 * @since 2.2.0
 	 */
@@ -97,6 +103,17 @@ abstract class Navigation
 	public function getOutput()
 	{
 		return $this->_output;
+	}
+
+	/**
+	 * get the navigation array
+	 *
+	 * @since 2.2.0
+	 */
+
+	public function getArray()
+	{
+		return $this->_navigationArray;
 	}
 
 	/**
@@ -136,7 +153,7 @@ abstract class Navigation
 		}
 		else
 		{
-			$classString = ' class="list-test-here' . $this->_type . '"';
+			$classString = ' class="list_' . $this->_type . '"';
 		}
 		return $classString;
 	}

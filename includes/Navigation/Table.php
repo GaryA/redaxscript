@@ -12,6 +12,7 @@
 namespace Redaxscript\Navigation;
 use Redaxscript\Db;
 use Redaxscript\Navigation;
+use Redaxscript;
 
 class Table extends Navigation
 {
@@ -145,13 +146,14 @@ class Table extends Navigation
 	{
 		$index = 0;
 		$errorCount = 0;
+		$accessValidator = new Redaxscript\Validator\Access();
 		if (count($resultSet) > 0)
 		{
 			/* iterate over the record set */
 
 			foreach ($resultSet as $record)
 			{
-				if (check_access($record->access, $this->_registry->get('myGroups')))
+				if($accessValidator->validate($record->access, $this->_registry->get('myGroups')))
 				{
 					if (($this->_type === 'categories' && (int)$record->parent === $filter) || $this->_type === 'articles' || $this->_type === 'comments')
 					{
@@ -229,7 +231,7 @@ class Table extends Navigation
 
 	public function render()
 	{
-		$prefix = hook(__FUNCTION__ . '_start');
+		$prefix = Redaxscript\Hook::trigger(__FUNCTION__ . '_start');
 		$output = '';
 		$error = '';
 
@@ -273,7 +275,7 @@ class Table extends Navigation
 			$output = '<ul' .$idString . $classString . '><li>' . $error . '</li></ul>';
 		}
 
-		$output = $prefix . $output . hook(__FUNCTION__ . '_end');
+		$output = $prefix . $output . Redaxscript\Hook::trigger(__FUNCTION__ . '_end');
 		$this->_output = $output;
 	}
 
